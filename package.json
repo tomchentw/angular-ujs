@@ -1,0 +1,38 @@
+{
+  "name": "angular-ujs",
+  "version": "0.1.0",
+  "description": "Ruby on Rails unobtrusive scripting adapter for angularjs ( Without jQuery dependency )",
+  "main": "angular-ujs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/tomchentw/angular-ujs.git"
+  },
+  "keywords": [
+    "Ruby on Rails",
+    "RoR",
+    "AngularJS",
+    "jQuery",
+    "Unobtrusive scripting"
+  ],
+  "author": {
+    "name": "tomchentw",
+    "email": "developer@tomchentw.com",
+    "url": "https://github.com/tomchentw/"
+  },
+  "license": {
+    "type": "MIT",
+    "url": "http://tomchentw.mit-license.org/"
+  },
+  "bugs": {
+    "url": "https://github.com/tomchentw/angular-ujs/issues"
+  },
+  "homepage": "https://github.com/tomchentw/angular-ujs",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-livescript": "~0.5.1"
+  }
+}
