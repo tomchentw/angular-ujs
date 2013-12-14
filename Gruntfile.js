@@ -26,11 +26,20 @@ module.exports = function(grunt) {
         dest: '<%= grunt.config.get("livescript.compile.dest").replace(".js", ".min.js") %>'
       },
       options: { banner: '<%= banner %>' }
+    },
+    copy: { rubygem: {
+        expand: true,
+        cwd: '<%= fdr.dest %>',
+        src: '<%= pkg.name %>*.js',
+        dest: 'vendor/assets/javascripts/',
+        filter: 'isFile'
+      }
     }
   });
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-livescript');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   //
-  grunt.registerTask('default', ['livescript:compile', 'uglify:compile'])
+  grunt.registerTask('default', ['livescript:compile', 'uglify:compile', 'copy:rubygem'])
 };
