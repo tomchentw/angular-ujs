@@ -1,4 +1,4 @@
-const {noop, element} = angular
+const {noop, element, isString} = angular
 
 const confirmDirective = ->
 
@@ -37,32 +37,7 @@ const railsFactory = <[
 
   cancelActionOn: !(event) ->
     event.preventDefault!
-    event.stopPropagation!
-
-  remoteSubmit: ($form) ->
-    const inputData = {}
-    const inputsArray = $form.find 'input'
-    for i from 0 til inputsArray.length
-      const input = inputsArray.eq i
-      name = input.attr 'name'
-      name = name.replace /\[/g '.' .replace /\]/g '' if name.match /\[\S+\]/
-      #
-      switch input.attr 'type'
-        when 'file'
-          return false
-        when 'checkbox'
-          break unless input.0.checked
-          #
-          # @see http://apidock.com/rails/ActionView/Helpers/FormHelper/check_box
-          #
-          fallthrough
-        default
-          $parse(name).assign(inputData, input.val!)
-
-    $http do
-      method: $form.attr 'method'
-      url: $form.attr 'action'
-      data: inputData
+    event.stopPropagation!    
 
 const remoteDirective = <[
        rails
@@ -72,7 +47,7 @@ const remoteDirective = <[
   restrict: 'A'
   link: !($scope, $element, $attrs, $ctrls) ->
     const [confirmCtrl || noopConfirmCtrl, remoteCtrl] = $ctrls
-    return unless $element.attr 'data-remote'
+    return unless $element.attr 'data-remote' |> isString
     #
     const onSubmitHandler = !(event) ->
       # If $element.is 'a', it won't get the 'submit' event.
@@ -81,24 +56,37 @@ const remoteDirective = <[
       const answer = confirmCtrl.allowAction!
       return unless answer
       #
-      remoteCtrl.submitForm $element, $attrs.type
+      remoteCtrl.submitForm $element, $attrs.remote
     #
     $element.on 'submit' onSubmitHandler
     $scope.$on '$destroy' !-> $element.off 'submit' onSubmitHandler
   
   controller: <[
-          rails
-  ]> ++ !(rails) ->
-    @submitForm = !($form) ->
-      rails.remoteSubmit $form
+          $scope  $http
+  ]> ++ !($scope, $http) ->
+    const successCallback = !(response) ->
+      $scope.$emit 'rails:remote:success' response
+
+    const errorCallback = !(response) ->
+      $scope.$emit 'rails:remote:error' response
+
+    @submitForm = ($form, modelName) ->
+      $http do
+        method: $form.attr 'method'
+        url: $form.attr 'action'
+        data:
+          "#modelName": $scope[modelName]
+      .then successCallback, errorCallback
 
 const noopRemoteCtrl = do
-  submitForm: !($form) ->
+  submitForm: ($form) ->
     $form.0.submit!
+    #
+    then: noop
 
 const methodDirective = <[
-       $document  rails
-]> ++ ($document, rails) ->
+       $document  $compile  rails
+]> ++ ($document, $compile, rails) ->
 
   require: <[?confirm ?remote]>
   restrict: 'A'
@@ -114,12 +102,14 @@ const methodDirective = <[
       const $form = element '<form class="ng-hide" method="post"></form>'
       $form.attr 'action' $attrs.href
       rails.appendCsrfInputTo $form
-      const $method = element '<input type="hidden" name="_method">'
+      const $method = element '<input type="hidden" name="_method" ng-model="link._method">'
       $method.attr 'value' $attrs.method
       $form.append $method
 
+      $compile($form)($scope.$new true)
       $document.find 'body' .append $form
-      remoteCtrl.submitForm $form
+      remoteCtrl.submitForm $form, 'link' .then !->
+        $form.remove!
     #
     $element.on 'click' onClickHandler
     $scope.$on '$destroy' !-> $element.off 'click' onClickHandler

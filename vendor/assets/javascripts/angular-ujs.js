@@ -1,6 +1,6 @@
 (function(){
-  var noop, element, confirmDirective, noopConfirmCtrl, railsFactory, remoteDirective, noopRemoteCtrl, methodDirective;
-  noop = angular.noop, element = angular.element;
+  var noop, element, isString, confirmDirective, noopConfirmCtrl, railsFactory, remoteDirective, noopRemoteCtrl, methodDirective;
+  noop = angular.noop, element = angular.element, isString = angular.isString;
   confirmDirective = function(){
     return {
       restrict: 'A',
@@ -45,35 +45,6 @@
       cancelActionOn: function(event){
         event.preventDefault();
         event.stopPropagation();
-      },
-      remoteSubmit: function($form){
-        var inputData, inputsArray, i$, to$, i, input, name;
-        inputData = {};
-        inputsArray = $form.find('input');
-        for (i$ = 0, to$ = inputsArray.length; i$ < to$; ++i$) {
-          i = i$;
-          input = inputsArray.eq(i);
-          name = input.attr('name');
-          if (name.match(/\[\S+\]/)) {
-            name = name.replace(/\[/g, '.').replace(/\]/g, '');
-          }
-          switch (input.attr('type')) {
-          case 'file':
-            return false;
-          case 'checkbox':
-            if (!input[0].checked) {
-              break;
-            }
-            // fallthrough
-          default:
-            $parse(name).assign(inputData, input.val());
-          }
-        }
-        return $http({
-          method: $form.attr('method'),
-          url: $form.attr('action'),
-          data: inputData
-        });
       }
     };
   });
@@ -84,7 +55,8 @@
       link: function($scope, $element, $attrs, $ctrls){
         var confirmCtrl, remoteCtrl, onSubmitHandler;
         confirmCtrl = $ctrls[0] || noopConfirmCtrl, remoteCtrl = $ctrls[1];
-        if (!$element.attr('data-remote')) {
+        if (!isString(
+        $element.attr('data-remote'))) {
           return;
         }
         onSubmitHandler = function(event){
@@ -94,16 +66,28 @@
           if (!answer) {
             return;
           }
-          remoteCtrl.submitForm($element, $attrs.type);
+          remoteCtrl.submitForm($element, $attrs.remote);
         };
         $element.on('submit', onSubmitHandler);
         $scope.$on('$destroy', function(){
           $element.off('submit', onSubmitHandler);
         });
       },
-      controller: ['rails'].concat(function(rails){
-        this.submitForm = function($form){
-          rails.remoteSubmit($form);
+      controller: ['$scope', '$http'].concat(function($scope, $http){
+        var successCallback, errorCallback;
+        successCallback = function(response){
+          $scope.$emit('rails:remote:success', response);
+        };
+        errorCallback = function(response){
+          $scope.$emit('rails:remote:error', response);
+        };
+        this.submitForm = function($form, modelName){
+          var ref$;
+          return $http({
+            method: $form.attr('method'),
+            url: $form.attr('action'),
+            data: (ref$ = {}, ref$[modelName + ""] = $scope[modelName], ref$)
+          }).then(successCallback, errorCallback);
         };
       })
     };
@@ -111,9 +95,12 @@
   noopRemoteCtrl = {
     submitForm: function($form){
       $form[0].submit();
+      return {
+        then: noop
+      };
     }
   };
-  methodDirective = ['$document', 'rails'].concat(function($document, rails){
+  methodDirective = ['$document', '$compile', 'rails'].concat(function($document, $compile, rails){
     return {
       require: ['?confirm', '?remote'],
       restrict: 'A',
@@ -133,11 +120,14 @@
           $form = element('<form class="ng-hide" method="post"></form>');
           $form.attr('action', $attrs.href);
           rails.appendCsrfInputTo($form);
-          $method = element('<input type="hidden" name="_method">');
+          $method = element('<input type="hidden" name="_method" ng-model="link._method">');
           $method.attr('value', $attrs.method);
           $form.append($method);
+          $compile($form)($scope.$new(true));
           $document.find('body').append($form);
-          remoteCtrl.submitForm($form);
+          remoteCtrl.submitForm($form, 'link').then(function(){
+            $form.remove();
+          });
         };
         $element.on('click', onClickHandler);
         $scope.$on('$destroy', function(){
