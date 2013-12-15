@@ -66,7 +66,6 @@
             }
             // fallthrough
           default:
-            console.log(name, input.val());
             $parse(name).assign(inputData, input.val());
           }
         }
@@ -131,7 +130,7 @@
           if (!answer) {
             return;
           }
-          $form = element('<form method="post"></form>');
+          $form = element('<form class="ng-hide" method="post"></form>');
           $form.attr('action', $attrs.href);
           rails.appendCsrfInputTo($form);
           $method = element('<input type="hidden" name="_method">');

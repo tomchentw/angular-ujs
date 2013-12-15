@@ -57,7 +57,6 @@ const railsFactory = <[
           #
           fallthrough
         default
-          console.log name, input.val!
           $parse(name).assign(inputData, input.val!)
 
     $http do
@@ -112,7 +111,7 @@ const methodDirective = <[
       const answer = confirmCtrl.allowAction!
       return unless answer
       #
-      const $form = element '<form method="post"></form>'
+      const $form = element '<form class="ng-hide" method="post"></form>'
       $form.attr 'action' $attrs.href
       rails.appendCsrfInputTo $form
       const $method = element '<input type="hidden" name="_method">'
