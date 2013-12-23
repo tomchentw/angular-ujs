@@ -1,4 +1,4 @@
-# angular-ujs ( Angular::Ujs )
+# angular-ujs ( [`Angular::Ujs`](https://rubygems.org/gems/angular-ujs) )
 
 Ruby on Rails unobtrusive scripting adapter for angularjs ( Without jQuery dependency )
 
@@ -41,7 +41,7 @@ We only support Rails 3.1+, add these lines to the top of your `app/assets/javas
 
 And include in your `angular` module definition:
     
-    /* angular.ujs will depend on 'ng-rails-csrf' module.
+    /* 'angular.ujs' will depend on 'ng-rails-csrf' module.
      */    
     var module = angular.module('my-awesome-project', ['angular.ujs']).
 
