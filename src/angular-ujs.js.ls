@@ -114,7 +114,7 @@ const methodDirective = <[
     $element.on 'click' onClickHandler
     $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
 
-angular.module 'rails.ujs' <[ng-rails-csrf]>
+angular.module 'angular.ujs' <[ng-rails-csrf]>
 .directive 'confirm' confirmDirective
 .factory 'rails' railsFactory
 .directive 'remote' remoteDirective

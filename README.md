@@ -22,9 +22,10 @@ Then include them through script tag in your HTML.
 ### Rails projects
 
 Add these line to your application's Gemfile:
-
-    gem 'ng-rails-csrf'
-    gem 'angular-ujs'
+```ruby
+gem 'ng-rails-csrf'
+gem 'angular-ujs'
+```
 
 And then execute:
 
@@ -37,6 +38,12 @@ We only support Rails 3.1+, add these lines to the top of your `app/assets/javas
 //= require ng-rails-csrf
 //= require angular-ujs
 ```
+
+And include in your `angular` module definition:
+    
+    /* angular.ujs will depend on 'ng-rails-csrf' module.
+     */    
+    var module = angular.module('my-awesome-project', ['angular.ujs']).
 
 ## [Usage](https://github.com/tomchentw/angular-ujs/blob/master/src/README.md)
 

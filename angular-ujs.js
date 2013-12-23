@@ -136,5 +136,5 @@
       }
     };
   });
-  angular.module('rails.ujs', ['ng-rails-csrf']).directive('confirm', confirmDirective).factory('rails', railsFactory).directive('remote', remoteDirective).directive('method', methodDirective);
+  angular.module('angular.ujs', ['ng-rails-csrf']).directive('confirm', confirmDirective).factory('rails', railsFactory).directive('remote', remoteDirective).directive('method', methodDirective);
 }).call(this);

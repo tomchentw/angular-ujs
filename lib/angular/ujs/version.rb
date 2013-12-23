@@ -1,5 +1,7 @@
+require 'json'
+
 module Angular
   module Ujs
-    VERSION = "0.2.0"
+    VERSION = JSON.parse(File.read('package.json'))['version']
   end
 end
