@@ -1,7 +1,8 @@
 {
   "name": "angular-ujs",
   "version": "0.2.1",
-  "description": "Ruby on Rails unobtrusive scripting adapter for angularjs ( Without jQuery dependency )",
+  "description": "Unobtrusive scripting adapter for angularjs",
+  "summary": "Ruby on Rails unobtrusive scripting adapter for angularjs ( Without jQuery dependency )",
   "main": "angular-ujs.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

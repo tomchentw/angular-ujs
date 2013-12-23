@@ -1,17 +1,17 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'angular/ujs/version'
+require 'angular/ujs/package'
 
 Gem::Specification.new do |spec|
-  spec.name          = "angular-ujs"
+  spec.name          = Angular::Ujs::NAME
   spec.version       = Angular::Ujs::VERSION
-  spec.authors       = ["tomchentw"]
-  spec.email         = ["developer@tomchentw.com"]
-  spec.description   = %q{Unobtrusive scripting adapter for angularjs}
-  spec.summary       = %q{Ruby on Rails unobtrusive scripting adapter for angularjs ( Without jQuery dependency )}
-  spec.homepage      = "https://github.com/tomchentw/angular-ujs"
-  spec.license       = "MIT"
+  spec.authors       = [Angular::Ujs::AUTHOR["name"]]
+  spec.email         = [Angular::Ujs::AUTHOR["email"]]
+  spec.description   = Angular::Ujs::DESCRIPTION
+  spec.summary       = Angular::Ujs::SUMMARY
+  spec.homepage      = Angular::Ujs::HOMEPAGE
+  spec.license       = Angular::Ujs::LICENSE["type"]
 
   spec.files         = ["LICENSE", "README.md"] + Dir["lib/**/*.rb"] + Dir["vendor/assets/javascripts/*.js"]
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
