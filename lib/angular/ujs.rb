@@ -1,4 +1,4 @@
-require "angular/ujs/version"
+require "angular/ujs/package"
 
 module Angular
   module Ujs
