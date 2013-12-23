@@ -5,8 +5,8 @@ Ruby on Rails unobtrusive scripting adapter for angularjs ( Without jQuery depen
 ## Project philosophy
 
 ### Native, lightweight directives
-Unobtrusive scripting provides the same interface with angular directives, this project makes use of the similarity and provides seamless intergration with `jquery_ujs`.  
-Further improvements through PRs are welcome.
+Unobtrusive scripting provides the same interface with angular `directives`.  
+This project makes use of the similarity and provides seamless intergration with `jquery_ujs`.  
 
 ## Installation
 
@@ -16,6 +16,7 @@ This project follows **DRY** and has one dependency on [`ng-rails-csrf`](https:/
 
 * Download and include [`ng-rails-csrf.js`](https://github.com/xrd/ng-rails-csrf/blob/master/vendor/assets/javascripts/ng-rails-csrf.js).
 * Download and include [`angular-ujs.js`](https://github.com/tomchentw/angular-ujs/blob/master/angular-ujs.js) OR [`angular-ujs.min.js`](https://github.com/tomchentw/angular-ujs/blob/master/angular-ujs.min.js).  
+
 Then include them through script tag in your HTML.
 
 ### Rails projects
@@ -36,10 +37,6 @@ We only support Rails 3.1+, add these lines to the top of your `app/assets/javas
 //= require ng-rails-csrf
 //= require angular-ujs
 ```
-
-### Ruby gem only
-
-    $ gem install ng-rails-csrf angular-ujs
 
 ## [Usage](https://github.com/tomchentw/angular-ujs/blob/master/src/README.md)
 
