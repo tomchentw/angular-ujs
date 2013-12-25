@@ -38,7 +38,7 @@ This attribute indicates that the link or form is to be submitted asynchronously
 
 For `angularjs` apps, only inputs with `ng-model` will be submitted with `data-remote`.
 
-## Not Supported Features
+## Unsupported Features
 
 ### "data-disable-with": Automatic disabling of links and submit buttons in forms
 **NOT YET SUPPORTED**
