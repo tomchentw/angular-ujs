@@ -10,11 +10,6 @@ beforeEach inject !(_$compile_, _$rootScope_, _$document_, _$httpBackend_, _$sni
   $httpBackend  := _$httpBackend_
   $sniffer      := _$sniffer_
 
-const changeInputValueTo = !($input, value) ->
-  $input.val value 
-  $input.trigger if $sniffer.hasEvent 'input' then 'input' else 'change'
-  $rootScope.$digest!
-
 it 'should start test' !(...) ->
   expect true .toBeTruthy!
 
@@ -59,8 +54,10 @@ describe 'RailsRemoteFormCtrl' !(...) ->
     expect railsRemoteFormCtrl.submit .toBeDefined!
 
   it 'should submit form using $http' !(...) ->
+    const EXPECTED_NAME = 'angular-ujs'
+    
     $httpBackend.expectPOST '/users' do
-      name: 'angular-ujs'
+      name: EXPECTED_NAME
     .respond 201
 
     $element = $compile('''
@@ -69,11 +66,62 @@ describe 'RailsRemoteFormCtrl' !(...) ->
       </form>
     ''')($scope)
 
-    $element.find 'input' .eq 0 |> changeInputValueTo _, 'angular-ujs'
+    $element.find 'input' .eq 0 .val EXPECTED_NAME .change!
     railsRemoteFormCtrl.submit $element, 'user'
     $httpBackend.flush!
 
+  it 'should submit complex form using $http' !(...) ->
+    const EXPECTED_NAME = 'angular-ujs'
+    const EXPECTED_EMAIL = 'developer@tomchentw.com'
+    const EXPECTED_TOS = 'read'
+    const EXPECTED_AGE = 18
+    const EXPECTED_COMMIT = 'private'
 
+    const EXPECTED_COLOR = 'green'
+    const EXPECTED_DESC = 'angular-ujs is ready to work with your awesome project!!'
+    const COLORS = <[red green blue]>
+
+    $scope.colors = COLORS
+
+    $httpBackend.expectPOST '/users' do
+      name: EXPECTED_NAME
+      email: EXPECTED_EMAIL
+      tos: EXPECTED_TOS
+      age: EXPECTED_AGE
+      commit: EXPECTED_COMMIT
+      color: EXPECTED_COLOR
+      desc: EXPECTED_DESC
+    .respond 201
+
+    $element = $compile('''
+      <form method="POST" action="/users">
+        <input ng-model="user.name" type="text">
+        <input ng-model="user.email" type="email">
+        <input ng-model="user.tos" type="checkbox" ng-true-value="read">
+        <input ng-model="user.age" type="number">
+
+        <input ng-model="user.commit" value="public" type="radio">
+        <input ng-model="user.commit" value="protected" type="radio">
+        <input ng-model="user.commit" value="private" type="radio">
+
+        <select ng-model="user.color" ng-options="color for color in colors"></select>
+        <textarea ng-model="user.desc"></textarea>
+      </form>
+    ''')($scope)
+
+    const inputs = $element.find 'input'
+    inputs.eq 0 .val EXPECTED_NAME .change!
+    inputs.eq 1 .val EXPECTED_EMAIL .change!
+    inputs.2.click!
+    inputs.eq 3 .val EXPECTED_AGE .change!
+    inputs.6.click!
+    
+    $element.find 'select' .val COLORS.indexOf(EXPECTED_COLOR) .change!
+    $element.find 'textarea' .val EXPECTED_DESC .change!
+    $scope.$digest!
+
+    railsRemoteFormCtrl.submit $element, 'user'
+    $httpBackend.flush!
 
 
 
