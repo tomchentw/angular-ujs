@@ -18,7 +18,7 @@ angular.module 'angular.ujs' <[]>
     const $form = $compile("""
       <form class="ng-hide" method="POST" action="#{ $attrs.href }">
         <input type="text" name="_method" ng-model="link._method">
-        <input type="text" name="#{ metaTags['csrf-param'] }" value="#{ metaTags['csrf-param'] }">
+        <input type="text" name="#{ metaTags['csrf-param'] }" value="#{ metaTags['csrf-token'] }">
       </form>
     """)($scope.$new!)
     $document.find 'body' .append $form
@@ -64,10 +64,9 @@ angular.module 'angular.ujs' <[]>
   require: <[confirm]>
   compile: (tElement, tAttrs) ->
     const {$attr} = tAttrs
-    if $attr.confirm isnt 'data-confirm' or $attr.remote is 'data-remote' or $attr.method is 'data-method'
-      angular.noop
-    else
-      postLinkFn
+    return if $attr.confirm isnt 'data-confirm' or $attr.remote is 'data-remote' or $attr.method is 'data-method'
+    
+    postLinkFn
 
 .controller 'RailsRemoteFormCtrl' <[
         $scope  $http
@@ -79,6 +78,7 @@ angular.module 'angular.ujs' <[]>
       $scope.$emit 'rails:remote:error' response
 
     @submit = ($form, modelName) ->
+      console.log $form.scope![modelName]
       $http do
         method: $form.attr 'method'
         url: $form.attr 'action'
@@ -107,11 +107,8 @@ angular.module 'angular.ujs' <[]>
   restrict: 'A'
   controller: 'RailsRemoteFormCtrl'
   compile: (tElement, tAttrs) ->
-    if tAttrs.$attr.remote is 'data-remote'
-      postLinkFn
-    else
-      angular.noop
-
+    return if tAttrs.$attr.remote isnt 'data-remote'
+    postLinkFn
 
 .directive 'method' <[
        rails
@@ -119,16 +116,20 @@ angular.module 'angular.ujs' <[]>
 
   const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
     const [remoteCtrl || new rails.noopRemoteFormCtrl, confirmCtrl || new rails.noopConfirmCtrl] = $ctrls
-    
+    console.log remoteCtrl
+
     const onClickHandler = !(event) ->
+      console.log 'onClickHandler'
       confirmCtrl.denyDefaultAction event if confirmCtrl.allowAction $attrs
       
       const $form = rails.createMethodFormElement $attrs, $scope
 
+      console.log 'before remoteCtrl.submit'
       <-! remoteCtrl.submit $form, 'link' .then
       $form.scope!$destroy!
       $form.remove!
 
+    console.log 'setup onClickHandler'
     $element.on 'click' onClickHandler
     $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
 
@@ -136,8 +137,6 @@ angular.module 'angular.ujs' <[]>
   require: <[?remote ?confirm]>
   restrict: 'A'
   compile: (tElement, tAttrs) ->
-    if tAttrs.$attr.method is 'data-method'
-      postLinkFn
-    else
-      angular.noop
+    return if tAttrs.$attr.method isnt 'data-method'
+    postLinkFn
 

@@ -283,7 +283,7 @@ describe 'remote directive' !(...) ->
 
   it 'should work with confirm directive' !(...) ->
     const EXPECTED_NAME = 'angular-ujs'
-    const confirmSpy = spyOn window, 'confirm' .andReturn true
+    spyOn window, 'confirm' .andReturn true
     
     $httpBackend.expectPOST '/users' do
       name: EXPECTED_NAME
@@ -314,20 +314,25 @@ describe 'method directive' !(...) ->
   afterEach !(...) ->
     $scope.$destroy!
 
-  it "shouldn't activate without 'data-' prefix" !(...) ->    
-    const $element = $compile('''
-      <a href="/users/sign_out" method="DELETE">SignOut</a>
-    ''')($scope)
-    $document.find 'body' .append $element
-    
-    $element.on 'click' !(event) ->
-      expect event.defaultPrevented .toBeFalsy!
-      event.preventDefault!
-      event.stopPropagation!
-      $element.remove!
+  it "shouldn't activate without 'data-' prefix" !(...) ->
+    clicked = false
+    runs !->
+      const $element = $compile('''
+        <a href="/users/sign_out" method="DELETE">SignOut</a>
+      ''')($scope)
+      $document.find 'body' .append $element
+      
+      $element.on 'click' !(event) ->
+        event.preventDefault!
+        event.stopPropagation!
+        $element.remove!
+        clicked := true
 
-    $element.click!
+      $element.click!
 
+    waitsFor ->
+      clicked
+    , 'anchor should be clicked', 500
 
 describe 'method directive with remote directive' !(...) ->
   $scope = void
@@ -338,24 +343,51 @@ describe 'method directive with remote directive' !(...) ->
   afterEach !(...) ->
     $scope.$destroy!
 
-  it "should submit with remote form" !(...) ->    
-        
-    $httpBackend.expectPOST '/users/sign_out' do
-      _method: 'DELETE'
-    .respond 201
+  it "should submit with remote form" !(...) ->
+    response = false
+    runs !->
+      $httpBackend.expectPOST '/users/sign_out' do
+        _method: 'DELETE'
+      .respond 201
 
-    const $element = $compile('''
-      <a href="/users/sign_out" data-method="DELETE" data-remote="true">SignOut</a>
-    ''')($scope)
-    $document.find 'body' .append $element
+      const $element = $compile('''
+        <a href="/users/sign_out" data-method="DELETE" data-remote="true">SignOut</a>
+      ''')($scope)
+      $document.find 'body' .append $element
 
-    $scope.$on 'rails:remote:success' !->
-      expect true .toBeTruthy!
+      $scope.$on 'rails:remote:success' !->
+        response := true
 
-    $element.click!
-    $httpBackend.flush!
+      $element.click!
+      $httpBackend.flush!
 
+    waitsFor ->
+      response
+    , 'response should be returned', 500
 
+  it 'should work with confirm and remote form' !(...) ->
+    response = false
+
+    runs !->
+      spyOn window, 'confirm' .andReturn true
+      $httpBackend.expectPOST '/users/sign_out' do
+        _method: 'DELETE'
+      .respond 201
+
+      const $element = $compile('''
+        <a href="/users/sign_out" data-method="DELETE" data-remote="true" data-confirm="Are u sure?">SignOut</a>
+      ''')($scope)
+      $document.find 'body' .append $element
+
+      $scope.$on 'rails:remote:success' !->
+        response := true
+
+      $element.click!
+      $httpBackend.flush!
+
+    waitsFor ->
+      response
+    , 'response should be returned', 500
 
 
 
