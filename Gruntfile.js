@@ -6,7 +6,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-livescript');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-release');
+  grunt.loadNpmTasks('grunt-bump');
   // Project configuration.
   /*jshint scripturl:true*/
   grunt.initConfig({
@@ -82,9 +82,13 @@ module.exports = function(grunt) {
         singleRun: true
       }
     },
-    release: {
+    bump: {
       options: {
-        npm: false
+        commit: true,
+        commitMessage: 'Release v%VERSION%',
+        commitFiles: ['-a'],
+        tagName: 'v%VERSION%', // consistent with ruby gems
+        pushTo: 'origin'
       }
     }
   });
