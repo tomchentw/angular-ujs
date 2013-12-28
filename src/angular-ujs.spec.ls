@@ -15,6 +15,11 @@ it 'should start test' !(...) ->
 
 
 describe 'rails service' !(...) ->
+  const MOCK_META_TAGS = '''
+    <meta content="authenticity_token" name="csrf-param">
+    <meta content="qwertyuiopasdfghjklzxcvbnm=" name="csrf-token">
+  '''
+
   railsService = confirmSpy = mockEvent = void
 
   beforeEach inject !(rails) ->
@@ -38,6 +43,40 @@ describe 'rails service' !(...) ->
     it 'should allow falsy value returned by calling window.confirm' !(...) ->
       confirmSpy.andReturn null
       expect railsService.confirmAction(MESSAGE, mockEvent) .toBeFalsy!
+
+  const appendMetaTags = (template || MOCK_META_TAGS) ->
+    const $meta = angular.element template
+    $document.find 'head' .append $meta
+    $meta
+
+  describe 'getMetaTags' !(...) ->
+    it 'should return object' !(...) ->
+      expect typeof! railsService.getMetaTags! .toBe 'Object'
+
+    it 'should return added meta tags' !(...) ->
+      const $meta = appendMetaTags '<meta content="authenticity_token" name="csrf-param">'
+      const metaTags = railsService.getMetaTags!
+
+      expect metaTags['csrf-param'] .toBe 'authenticity_token'
+
+    it 'should return csrf meta tags' !(...) ->
+      const $meta = appendMetaTags!
+      const metaTags = railsService.getMetaTags!
+
+      expect metaTags['csrf-param'] .toBe 'authenticity_token'
+      expect metaTags['csrf-token'] .toBe 'qwertyuiopasdfghjklzxcvbnm='
+
+  describe 'createMethodFormElement' !(...) ->
+    const $attrs = do
+      href: '/admin/login'
+      method: 'PUT'
+
+    it 'should return compiled form element' !(...) ->
+      appendMetaTags!
+      const $form = railsService.createMethodFormElement $attrs, $rootScope
+
+      expect $form.prop('tagName') .toBe 'FORM'
+      expect $form.scope! .toBeDefined!
 
   describe 'noopRemoteFormCtrl' !(...) ->
     it 'should be defined' !(...) ->

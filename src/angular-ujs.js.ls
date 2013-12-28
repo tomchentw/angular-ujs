@@ -1,7 +1,17 @@
 angular.module 'angular.ujs' <[]>
 .factory 'rails' <[
-       $window  $document  $parse  $http
-]> ++ ($window, $document, $parse, $http) ->
+       $window  $document  $compile
+]> ++ ($window, $document, $compile) ->
+
+  const getMetaTags = ->
+    const metas       = {}
+    const metasArray  = $document.find 'meta'
+    for i from 0 til metasArray.length
+      const meta = metasArray.eq i
+      metas[meta.attr 'name'] = meta.attr 'content'
+    metas
+
+  getMetaTags: getMetaTags
 
   confirmAction: (message, $event) ->
     const answer = angular.isDefined message and $window.confirm message
@@ -9,6 +19,18 @@ angular.module 'angular.ujs' <[]>
       $event.preventDefault!
       $event.stopPropagation!
     answer
+
+  createMethodFormElement: ($attrs, $scope) ->
+    const metaTags = getMetaTags!
+    const $form = $compile("""
+      <form class="ng-hide" method="post" action="#{ $attrs.href }>
+        <input type="hidden" name="_method" ng-model="link._method" value="#{ $attrs.method }">
+        <input type="hidden name="#{ metaTags['csrf-param']}" value="#{ metaTags['csrf-param']}>
+      </form>
+    """)($scope.$new true)
+
+    $document.find 'body' .append $form
+    $form
 
   noopRemoteFormCtrl: !->
     @submit = ->
