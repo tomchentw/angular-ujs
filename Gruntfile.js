@@ -44,7 +44,7 @@ module.exports = function(grunt) {
     },
     karma: {
       options: {
-        frameworks: ["jasmine"],
+        frameworks: ['jasmine'],
         files: [
           'misc/test-lib/angular.1.2.6.min.js',
           'misc/test-lib/angular-mocks.1.2.6.js',
