@@ -11,25 +11,26 @@ angular.module 'angular.ujs' <[]>
       metas[meta.attr 'name'] = meta.attr 'content'
     metas
 
-  getMetaTags: getMetaTags
-
   confirmAction: (message, $event) ->
     const answer = angular.isDefined message and $window.confirm message
     unless answer
       $event.preventDefault!
       $event.stopPropagation!
     answer
+ 
+  getMetaTags: getMetaTags
 
   createMethodFormElement: ($attrs, $scope) ->
     const metaTags = getMetaTags!
     const $form = $compile("""
-      <form class="ng-hide" method="post" action="#{ $attrs.href }>
-        <input type="hidden" name="_method" ng-model="link._method" value="#{ $attrs.method }">
-        <input type="hidden name="#{ metaTags['csrf-param']}" value="#{ metaTags['csrf-param']}>
+      <form class="ng-hide" method="POST" action="#{ $attrs.href }">
+        <input type="text" name="_method" ng-model="link._method">
+        <input type="text" name="#{ metaTags['csrf-param'] }" value="#{ metaTags['csrf-param'] }">
       </form>
-    """)($scope.$new true)
-
+    """)($scope.$new!)
     $document.find 'body' .append $form
+
+    $form.find 'input' .eq 0 .val $attrs.method .change!
     $form
 
   noopRemoteFormCtrl: !->
@@ -49,7 +50,7 @@ angular.module 'angular.ujs' <[]>
       $http do
         method: $form.attr 'method'
         url: $form.attr 'action'
-        data: $scope[modelName]
+        data: $form.scope![modelName]
       .then successCallback, errorCallback
 
 .directive 'remote' <[
@@ -78,4 +79,32 @@ angular.module 'angular.ujs' <[]>
     else
       angular.noop
 
+
+.directive 'method' <[
+       rails
+]> ++ (rails) ->
+
+  const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
+    const remoteCtrl = $ctrls.0 or new rails.noopRemoteFormCtrl
+    
+    const onClickHandler = !(event) ->
+      return if rails.confirmAction $attrs.confirm, event
+      
+      const $form = rails.createMethodFormElement $attrs, $scope
+
+      <-! remoteCtrl.submit $form, 'link' .then
+      $form.scope!$destroy!
+      $form.remove!
+
+    $element.on 'click' onClickHandler
+    $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
+
+
+  require: <[?remote]>
+  restrict: 'A'
+  compile: (tElement, tAttrs) ->
+    if tAttrs.$attr.method is 'data-method'
+      postLinkFn
+    else
+      angular.noop
 

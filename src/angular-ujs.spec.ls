@@ -10,6 +10,10 @@ beforeEach inject !(_$compile_, _$rootScope_, _$document_, _$httpBackend_, _$sni
   $httpBackend  := _$httpBackend_
   $sniffer      := _$sniffer_
 
+afterEach !(...) ->
+  $httpBackend.verifyNoOutstandingExpectation!
+  $httpBackend.verifyNoOutstandingRequest!
+
 it 'should start test' !(...) ->
   expect true .toBeTruthy!
 
@@ -100,8 +104,6 @@ describe 'RailsRemoteFormCtrl' !(...) ->
     railsRemoteFormCtrl := $controller 'RailsRemoteFormCtrl' {$scope}
 
   afterEach !(...) ->
-    $httpBackend.verifyNoOutstandingExpectation!
-    $httpBackend.verifyNoOutstandingRequest!
     $scope.$destroy!
 
   it 'should have a submit method' !(...) ->
@@ -114,7 +116,7 @@ describe 'RailsRemoteFormCtrl' !(...) ->
       name: EXPECTED_NAME
     .respond 201
 
-    $element = $compile('''
+    const $element = $compile('''
       <form method="POST" action="/users">
         <input ng-model="user.name" type="text">
       </form>
@@ -126,6 +128,7 @@ describe 'RailsRemoteFormCtrl' !(...) ->
 
     railsRemoteFormCtrl.submit $element, 'user'
     $httpBackend.flush!
+    $element.remove!
 
   it 'should submit complex form using $http' !(...) ->
     const EXPECTED_NAME = 'angular-ujs'
@@ -150,7 +153,7 @@ describe 'RailsRemoteFormCtrl' !(...) ->
       desc: EXPECTED_DESC
     .respond 201
 
-    $element = $compile('''
+    const $element = $compile('''
       <form method="POST" action="/users">
         <input ng-model="user.name" type="text">
         <input ng-model="user.email" type="email">
@@ -180,37 +183,30 @@ describe 'RailsRemoteFormCtrl' !(...) ->
 
     railsRemoteFormCtrl.submit $element, 'user'
     $httpBackend.flush!
+    $element.remove!
 
 describe 'remote directive' !(...) ->
   $scope = void
 
-  beforeEach inject !($controller) ->
+  beforeEach !(...) ->
     $scope       := $rootScope.$new!
 
   afterEach !(...) ->
-    $httpBackend.verifyNoOutstandingExpectation!
-    $httpBackend.verifyNoOutstandingRequest!
     $scope.$destroy!
 
-  it "shouldn't activate without 'data-' prefix" !(...) ->
-    const EXPECTED_NAME = 'angular-ujs'
-    const confirmSpy = spyOn window, 'confirm'
-    
-    $element = $compile('''
+  it "shouldn't activate without 'data-' prefix" !(...) ->    
+    const $element = $compile('''
       <form method="POST" action="/users" remote="user">
-        <input ng-model="user.name" type="text">
         <input type='submit'>
       </form>
     ''')($scope)
     $document.find 'body' .append $element
-
-    $element.find 'input' .eq 0 .val EXPECTED_NAME .change!
-    $scope.$digest!
     
     $element.on 'submit' !(event) ->
       expect event.defaultPrevented .toBeFalsy!
       event.preventDefault!
       event.stopPropagation!
+      $element.remove!
 
     $element.find 'input' .eq 1 .click!
 
@@ -222,7 +218,7 @@ describe 'remote directive' !(...) ->
       name: EXPECTED_NAME
     .respond 201
 
-    $element = $compile('''
+    const $element = $compile('''
       <form method="POST" action="/users" data-remote="user">
         <input ng-model="user.name" type="text">
         <input type='submit'>
@@ -236,13 +232,58 @@ describe 'remote directive' !(...) ->
     $element.find 'input' .eq 1 .click!
     $httpBackend.flush!
     expect confirmSpy .not.toHaveBeenCalled!
+    $element.remove!
 
 
+describe 'method directive' !(...) ->
+  $scope = void
+
+  beforeEach !(...) ->
+    $scope       := $rootScope.$new!
+
+  afterEach !(...) ->
+    $scope.$destroy!
+
+  it "shouldn't activate without 'data-' prefix" !(...) ->    
+    const $element = $compile('''
+      <a href="/users/sign_out" method="DELETE">SignOut</a>
+    ''')($scope)
+    $document.find 'body' .append $element
+    
+    $element.on 'click' !(event) ->
+      expect event.defaultPrevented .toBeFalsy!
+      event.preventDefault!
+      event.stopPropagation!
+      $element.remove!
+
+    $element.click!
 
 
+describe 'method directive with remote directive' !(...) ->
+  $scope = void
 
+  beforeEach inject !($controller) ->
+    $scope       := $rootScope.$new!
 
+  afterEach !(...) ->
+    $scope.$destroy!
 
+  it "should submit with remote form" !(...) ->    
+        
+    $httpBackend.expectPOST '/users/sign_out' do
+      _method: 'DELETE'
+    .respond 201
+
+    const $element = $compile('''
+      <a href="/users/sign_out" data-method="DELETE" data-remote="true">SignOut</a>
+    ''')($scope)
+    $document.find 'body' .append $element
+
+    $scope.$on 'rails:remote:success' !->
+      expect true .toBeTruthy!
+
+    $element.click!
+    $httpBackend.flush!
 
 
 
