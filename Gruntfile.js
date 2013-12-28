@@ -62,6 +62,7 @@ module.exports = function(grunt) {
       options: {
         frameworks: ['jasmine'],
         files: [
+          'misc/test-lib/jquery-1.10.2.min.js',
           'misc/test-lib/angular.1.2.6.min.js',
           'misc/test-lib/angular-mocks.1.2.6.js',
           '<%= fdr.tmp %><%= pkg.name %>.*.ls'
