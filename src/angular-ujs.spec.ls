@@ -56,13 +56,14 @@ describe 'rails service' !(...) ->
 describe 'RailsRemoteFormCtrl' !(...) ->
   railsRemoteFormCtrl = $scope = void
 
-  beforeEach inject !($controller ) ->
+  beforeEach inject !($controller) ->
     $scope              := $rootScope.$new!
     railsRemoteFormCtrl := $controller 'RailsRemoteFormCtrl' {$scope}
 
   afterEach !(...) ->
     $httpBackend.verifyNoOutstandingExpectation!
     $httpBackend.verifyNoOutstandingRequest!
+    $scope.$destroy!
 
   it 'should have a submit method' !(...) ->
     expect railsRemoteFormCtrl.submit .toBeDefined!
@@ -79,8 +80,11 @@ describe 'RailsRemoteFormCtrl' !(...) ->
         <input ng-model="user.name" type="text">
       </form>
     ''')($scope)
+    $document.find 'body' .append $element
 
     $element.find 'input' .eq 0 .val EXPECTED_NAME .change!
+    $scope.$digest!
+
     railsRemoteFormCtrl.submit $element, 'user'
     $httpBackend.flush!
 
@@ -122,6 +126,7 @@ describe 'RailsRemoteFormCtrl' !(...) ->
         <textarea ng-model="user.desc"></textarea>
       </form>
     ''')($scope)
+    $document.find 'body' .append $element
 
     const inputs = $element.find 'input'
     inputs.eq 0 .val EXPECTED_NAME .change!
@@ -137,7 +142,61 @@ describe 'RailsRemoteFormCtrl' !(...) ->
     railsRemoteFormCtrl.submit $element, 'user'
     $httpBackend.flush!
 
+describe 'remote directive' !(...) ->
+  $scope = void
 
+  beforeEach inject !($controller) ->
+    $scope       := $rootScope.$new!
+
+  afterEach !(...) ->
+    $httpBackend.verifyNoOutstandingExpectation!
+    $httpBackend.verifyNoOutstandingRequest!
+    $scope.$destroy!
+
+  it "shouldn't activate without 'data-' prefix" !(...) ->
+    const EXPECTED_NAME = 'angular-ujs'
+    const confirmSpy = spyOn window, 'confirm'
+    
+    $element = $compile('''
+      <form method="POST" action="/users" remote="user">
+        <input ng-model="user.name" type="text">
+        <input type='submit'>
+      </form>
+    ''')($scope)
+    $document.find 'body' .append $element
+
+    $element.find 'input' .eq 0 .val EXPECTED_NAME .change!
+    $scope.$digest!
+    
+    $element.on 'submit' !(event) ->
+      expect event.defaultPrevented .toBeFalsy!
+      event.preventDefault!
+      event.stopPropagation!
+
+    $element.find 'input' .eq 1 .click!
+
+  it 'should submit using $http for form element' !(...) ->
+    const EXPECTED_NAME = 'angular-ujs'
+    const confirmSpy = spyOn window, 'confirm'
+    
+    $httpBackend.expectPOST '/users' do
+      name: EXPECTED_NAME
+    .respond 201
+
+    $element = $compile('''
+      <form method="POST" action="/users" data-remote="user">
+        <input ng-model="user.name" type="text">
+        <input type='submit'>
+      </form>
+    ''')($scope)
+    $document.find 'body' .append $element
+
+    $element.find 'input' .eq 0 .val EXPECTED_NAME .change!
+    $scope.$digest!
+    
+    $element.find 'input' .eq 1 .click!
+    $httpBackend.flush!
+    expect confirmSpy .not.toHaveBeenCalled!
 
 
 

@@ -4,7 +4,7 @@ angular.module 'angular.ujs' <[]>
 ]> ++ ($window, $document, $parse, $http) ->
 
   confirmAction: (message, $event) ->
-    const answer = $window.confirm message || ''
+    const answer = angular.isDefined message and $window.confirm message
     unless answer
       $event.preventDefault!
       $event.stopPropagation!
@@ -29,3 +29,31 @@ angular.module 'angular.ujs' <[]>
         url: $form.attr 'action'
         data: $scope[modelName]
       .then successCallback, errorCallback
+
+.directive 'remote' <[
+       rails
+]> ++ (rails) ->
+
+  const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
+    const remoteCtrl = $ctrls.0
+    #
+    const onSubmitHandler = !(event) ->
+      # If $element.is 'a', it won't get the 'submit' event.
+      # We can assume 'onSubmitHandler' will be triggered on 'form' $element.
+      return if rails.confirmAction $attrs.confirm, event
+      #
+      remoteCtrl.submit $element, $attrs.remote
+    #
+    $element.on 'submit' onSubmitHandler
+    $scope.$on '$destroy' !-> $element.off 'submit' onSubmitHandler
+
+  require: <[remote]>
+  restrict: 'A'
+  controller: 'RailsRemoteFormCtrl'
+  compile: (tElement, tAttrs) ->
+    if tAttrs.$attr.remote is 'data-remote'
+      postLinkFn
+    else
+      angular.noop
+
+
