@@ -1,6 +1,6 @@
 {
   "name": "angular-ujs",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Unobtrusive scripting adapter for angularjs",
   "summary": "Ruby on Rails unobtrusive scripting adapter for angularjs ( Without jQuery dependency )",
   "main": "angular-ujs.js",
