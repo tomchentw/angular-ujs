@@ -1,121 +1,142 @@
-const {noop, element, isString} = angular
+angular.module 'angular.ujs' <[]>
+.factory 'rails' <[
+       $window  $document  $compile
+]> ++ ($window, $document, $compile) ->
 
-const confirmDirective = ->
-
-  restrict: 'A'
-  link: !(scope, element, attrs, confirmCtrl) ->
-    confirmCtrl <<< attrs{confirm}
-
-  controller: <[
-          $window
-  ]> ++ !($window) ->
-    @allowAction = ->
-      $window.confirm @confirm
-
-const noopConfirmCtrl = do
-  allowAction: -> true
-
-const railsFactory = <[
-       $document  $parse  $http
-]> ++ ($document, $parse, $http) ->
-  const metaTags = ->
+  const getMetaTags = ->
     const metas       = {}
     const metasArray  = $document.find 'meta'
     for i from 0 til metasArray.length
       const meta = metasArray.eq i
       metas[meta.attr 'name'] = meta.attr 'content'
     metas
+ 
+  getMetaTags: getMetaTags
 
-  metaTags: metaTags
+  createMethodFormElement: ($attrs, $scope) ->
+    const metaTags = getMetaTags!
+    const $form = $compile("""
+      <form class="ng-hide" method="POST" action="#{ $attrs.href }">
+        <input type="text" name="_method" ng-model="link._method">
+        <input type="text" name="#{ metaTags['csrf-param'] }" value="#{ metaTags['csrf-token'] }">
+      </form>
+    """)($scope.$new!)
+    $document.find 'body' .append $form
 
-  appendCsrfInputTo: !($form) ->
-    const tags = metaTags!
-    const $input = element '<input type="hidden"/>'
-    $input.attr 'name' tags['csrf-param']
-    $input.attr 'value' tags['csrf-token']
-    $form.append $input
+    $form.find 'input' .eq 0 .val $attrs.method .change!
+    $form
 
-  cancelActionOn: !(event) ->
-    event.preventDefault!
-    event.stopPropagation!    
+  noopConfirmCtrl: !->
+    @allowAction = -> true
 
-const remoteDirective = <[
-       rails
-]> ++ (rails) ->
+    @denyDefaultAction = !(event) ->
+      event.preventDefault!
+      event.stopPropagation!
 
-  require: <[?confirm ?remote]>
-  restrict: 'A'
-  link: !($scope, $element, $attrs, $ctrls) ->
-    const [confirmCtrl || noopConfirmCtrl, remoteCtrl] = $ctrls
-    return unless $element.attr 'data-remote' |> isString
-    #
-    const onSubmitHandler = !(event) ->
-      # If $element.is 'a', it won't get the 'submit' event.
-      # We can assume 'onSubmitHandler' will be triggered on 'form' $element.
-      rails.cancelActionOn event
-      const answer = confirmCtrl.allowAction!
-      return unless answer
-      #
-      remoteCtrl.submitForm $element, $attrs.remote
-    #
-    $element.on 'submit' onSubmitHandler
-    $scope.$on '$destroy' !-> $element.off 'submit' onSubmitHandler
+  noopRemoteFormCtrl: !->
+    @submit = ->
+      then: angular.noop
+
+.controller 'RailsConfirmCtrl' <[
+        $window  rails
+]> ++ !($window, rails) ->
+  rails.noopConfirmCtrl ...
   
-  controller: <[
-          $scope  $http
-  ]> ++ !($scope, $http) ->
+  @allowAction = ($attrs) ->
+    const message = $attrs.confirm
+    angular.isDefined message and $window.confirm message
+
+.directive 'confirm' <[
+
+]> ++ ->
+
+  const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
+    const confirmCtrl = $ctrls.0
+    
+    const onClickHandler = !(event) ->
+      confirmCtrl.denyDefaultAction event unless confirmCtrl.allowAction $attrs
+
+    $element.on 'click' onClickHandler
+    $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
+
+
+  restrict: 'A'
+  require: <[confirm]>
+  compile: (tElement, tAttrs) ->
+    const {$attr} = tAttrs
+    return if $attr.confirm isnt 'data-confirm' or $attr.remote is 'data-remote' or $attr.method is 'data-method'
+    
+    postLinkFn
+
+.controller 'RailsRemoteFormCtrl' <[
+        $scope  $http
+]> ++ !($scope, $http) ->
     const successCallback = !(response) ->
       $scope.$emit 'rails:remote:success' response
 
     const errorCallback = !(response) ->
       $scope.$emit 'rails:remote:error' response
 
-    @submitForm = ($form, modelName) ->
+    @submit = ($form, modelName) ->
+      console.log $form.scope![modelName]
       $http do
         method: $form.attr 'method'
         url: $form.attr 'action'
-        data:
-          "#modelName": $scope[modelName]
+        data: $form.scope![modelName]
       .then successCallback, errorCallback
 
-const noopRemoteCtrl = do
-  submitForm: ($form) ->
-    $form.0.submit!
-    #
-    then: noop
+.directive 'remote' <[
+       rails
+]> ++ (rails) ->
 
-const methodDirective = <[
-       $document  $compile  rails
-]> ++ ($document, $compile, rails) ->
-
-  require: <[?confirm ?remote]>
-  restrict: 'A'
-  link: !($scope, $element, $attrs, $ctrls) ->
-    const [confirmCtrl || noopConfirmCtrl, remoteCtrl || noopRemoteCtrl] = $ctrls
-    return unless $element.attr 'data-method'
+  const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
+    const [remoteCtrl, confirmCtrl || new rails.noopConfirmCtrl] = $ctrls
     #
-    const onClickHandler = !(event) ->
-      rails.cancelActionOn event
-      const answer = confirmCtrl.allowAction!
-      return unless answer
+    const onSubmitHandler = !(event) ->
+      confirmCtrl.denyDefaultAction event if confirmCtrl.allowAction $attrs
       #
-      const $form = element '<form class="ng-hide" method="post"></form>'
-      $form.attr 'action' $attrs.href
-      rails.appendCsrfInputTo $form
-      const $method = element '<input type="hidden" name="_method" ng-model="link._method">'
-      $method.attr 'value' $attrs.method
-      $form.append $method
-
-      $compile($form)($scope.$new true)
-      $document.find 'body' .append $form
-      remoteCtrl.submitForm $form, 'link' .then !->
-        $form.remove!
+      remoteCtrl.submit $element, $attrs.remote
     #
+    # If $element.is 'a', it won't get the 'submit' event.
+    # We can assume 'onSubmitHandler' will be triggered on 'form' $element.
+    #  
+    $element.on 'submit' onSubmitHandler
+    $scope.$on '$destroy' !-> $element.off 'submit' onSubmitHandler
+
+  require: <[remote ?confirm]>
+  restrict: 'A'
+  controller: 'RailsRemoteFormCtrl'
+  compile: (tElement, tAttrs) ->
+    return if tAttrs.$attr.remote isnt 'data-remote'
+    postLinkFn
+
+.directive 'method' <[
+       rails
+]> ++ (rails) ->
+
+  const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
+    const [remoteCtrl || new rails.noopRemoteFormCtrl, confirmCtrl || new rails.noopConfirmCtrl] = $ctrls
+    console.log remoteCtrl
+
+    const onClickHandler = !(event) ->
+      console.log 'onClickHandler'
+      confirmCtrl.denyDefaultAction event if confirmCtrl.allowAction $attrs
+      
+      const $form = rails.createMethodFormElement $attrs, $scope
+
+      console.log 'before remoteCtrl.submit'
+      <-! remoteCtrl.submit $form, 'link' .then
+      $form.scope!$destroy!
+      $form.remove!
+
+    console.log 'setup onClickHandler'
     $element.on 'click' onClickHandler
     $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
 
-angular.module 'angular.ujs' <[ng-rails-csrf]>
-.directive 'confirm' confirmDirective
-.factory 'rails' railsFactory
-.directive 'remote' remoteDirective
-.directive 'method' methodDirective
+
+  require: <[?remote ?confirm]>
+  restrict: 'A'
+  compile: (tElement, tAttrs) ->
+    return if tAttrs.$attr.method isnt 'data-method'
+    postLinkFn
+
