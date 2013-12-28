@@ -10,13 +10,6 @@ angular.module 'angular.ujs' <[]>
       const meta = metasArray.eq i
       metas[meta.attr 'name'] = meta.attr 'content'
     metas
-
-  confirmAction: (message, $event) ->
-    const answer = angular.isDefined message and $window.confirm message
-    unless answer
-      $event.preventDefault!
-      $event.stopPropagation!
-    answer
  
   getMetaTags: getMetaTags
 
@@ -33,9 +26,48 @@ angular.module 'angular.ujs' <[]>
     $form.find 'input' .eq 0 .val $attrs.method .change!
     $form
 
+  noopConfirmCtrl: !->
+    @allowAction = -> true
+
+    @denyDefaultAction = !(event) ->
+      event.preventDefault!
+      event.stopPropagation!
+
   noopRemoteFormCtrl: !->
     @submit = ->
       then: angular.noop
+
+.controller 'RailsConfirmCtrl' <[
+        $window  rails
+]> ++ !($window, rails) ->
+  rails.noopConfirmCtrl ...
+  
+  @allowAction = ($attrs) ->
+    const message = $attrs.confirm
+    angular.isDefined message and $window.confirm message
+
+.directive 'confirm' <[
+
+]> ++ ->
+
+  const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
+    const confirmCtrl = $ctrls.0
+    
+    const onClickHandler = !(event) ->
+      confirmCtrl.denyDefaultAction event unless confirmCtrl.allowAction $attrs
+
+    $element.on 'click' onClickHandler
+    $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
+
+
+  restrict: 'A'
+  require: <[confirm]>
+  compile: (tElement, tAttrs) ->
+    const {$attr} = tAttrs
+    if $attr.confirm isnt 'data-confirm' or $attr.remote is 'data-remote' or $attr.method is 'data-method'
+      angular.noop
+    else
+      postLinkFn
 
 .controller 'RailsRemoteFormCtrl' <[
         $scope  $http
@@ -58,19 +90,20 @@ angular.module 'angular.ujs' <[]>
 ]> ++ (rails) ->
 
   const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
-    const remoteCtrl = $ctrls.0
+    const [remoteCtrl, confirmCtrl || new rails.noopConfirmCtrl] = $ctrls
     #
     const onSubmitHandler = !(event) ->
-      # If $element.is 'a', it won't get the 'submit' event.
-      # We can assume 'onSubmitHandler' will be triggered on 'form' $element.
-      return if rails.confirmAction $attrs.confirm, event
+      confirmCtrl.denyDefaultAction event if confirmCtrl.allowAction $attrs
       #
       remoteCtrl.submit $element, $attrs.remote
     #
+    # If $element.is 'a', it won't get the 'submit' event.
+    # We can assume 'onSubmitHandler' will be triggered on 'form' $element.
+    #  
     $element.on 'submit' onSubmitHandler
     $scope.$on '$destroy' !-> $element.off 'submit' onSubmitHandler
 
-  require: <[remote]>
+  require: <[remote ?confirm]>
   restrict: 'A'
   controller: 'RailsRemoteFormCtrl'
   compile: (tElement, tAttrs) ->
@@ -85,10 +118,10 @@ angular.module 'angular.ujs' <[]>
 ]> ++ (rails) ->
 
   const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
-    const remoteCtrl = $ctrls.0 or new rails.noopRemoteFormCtrl
+    const [remoteCtrl || new rails.noopRemoteFormCtrl, confirmCtrl || new rails.noopConfirmCtrl] = $ctrls
     
     const onClickHandler = !(event) ->
-      return if rails.confirmAction $attrs.confirm, event
+      confirmCtrl.denyDefaultAction event if confirmCtrl.allowAction $attrs
       
       const $form = rails.createMethodFormElement $attrs, $scope
 
@@ -100,7 +133,7 @@ angular.module 'angular.ujs' <[]>
     $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
 
 
-  require: <[?remote]>
+  require: <[?remote ?confirm]>
   restrict: 'A'
   compile: (tElement, tAttrs) ->
     if tAttrs.$attr.method is 'data-method'

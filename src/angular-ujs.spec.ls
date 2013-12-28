@@ -24,29 +24,11 @@ describe 'rails service' !(...) ->
     <meta content="qwertyuiopasdfghjklzxcvbnm=" name="csrf-token">
   '''
 
-  railsService = confirmSpy = mockEvent = void
+  railsService = void
 
   beforeEach inject !(rails) ->
     railsService  := rails
-    confirmSpy    := spyOn window, 'confirm'
-    mockEvent     := new Event 'click'
 
-  describe 'confirmAction' !(...) ->
-    const MESSAGE = 'iMESSAGE'
-
-    it 'should trigger window.confirm' !(...) ->
-      confirmSpy.andReturn true
-      railsService.confirmAction MESSAGE, mockEvent
-      expect confirmSpy .toHaveBeenCalled!
-
-    it 'should return value of calling window.confirm' !(...) ->
-      const TRUTHY_STRING = 'success'
-      confirmSpy.andReturn TRUTHY_STRING
-      expect railsService.confirmAction(MESSAGE, mockEvent) .toEqual TRUTHY_STRING
-
-    it 'should allow falsy value returned by calling window.confirm' !(...) ->
-      confirmSpy.andReturn null
-      expect railsService.confirmAction(MESSAGE, mockEvent) .toBeFalsy!
 
   const appendMetaTags = (template || MOCK_META_TAGS) ->
     const $meta = angular.element template
@@ -54,6 +36,7 @@ describe 'rails service' !(...) ->
     $meta
 
   describe 'getMetaTags' !(...) ->
+    
     it 'should return object' !(...) ->
       expect typeof! railsService.getMetaTags! .toBe 'Object'
 
@@ -83,6 +66,7 @@ describe 'rails service' !(...) ->
       expect $form.scope! .toBeDefined!
 
   describe 'noopRemoteFormCtrl' !(...) ->
+    
     it 'should be defined' !(...) ->
       expect railsService.noopRemoteFormCtrl .toBeDefined!
 
@@ -95,6 +79,69 @@ describe 'rails service' !(...) ->
       
       const promise = noopCtrl.submit!
       expect promise.then .toBeDefined!
+
+  describe 'noopConfirmCtrl' !(...) ->
+    
+    it 'should be defined' !(...) ->
+      expect railsService.noopConfirmCtrl .toBeDefined!
+
+    it 'should be created with new' !(...) ->
+      expect new railsService.noopConfirmCtrl .toBeDefined!
+
+    it 'should return controller like RailsConfirmCtrl' !(...) ->
+      const noopCtrl = new railsService.noopConfirmCtrl
+      
+      expect noopCtrl.allowAction .toBeDefined!
+      expect noopCtrl.denyDefaultAction .toBeDefined!
+      expect noopCtrl.allowAction! .toBeTruthy!
+
+describe 'RailsConfirmCtrl' !(...) ->
+  railsConfirmCtrl = confirmSpy = $scope = void
+
+  beforeEach inject !($controller) ->
+    $scope            := $rootScope.$new!
+    railsConfirmCtrl  := $controller 'RailsConfirmCtrl' {$scope}
+    confirmSpy        := spyOn window, 'confirm'
+
+  afterEach !(...) ->
+    $scope.$destroy!
+
+  it 'should have a denyDefaultAction method' !(...) ->
+    expect railsConfirmCtrl.denyDefaultAction .toBeDefined!
+
+  it 'should supress event when denyDefaultAction called' !(...) ->
+    const event = $.Event 'click'
+    railsConfirmCtrl.denyDefaultAction event
+
+    expect event.isDefaultPrevented! .toBeTruthy!
+    expect event.isPropagationStopped! .toBeTruthy!
+
+  it 'should have a allowAction method' !(...) ->
+    expect railsConfirmCtrl.allowAction .toBeDefined!
+
+  it "shouldn't allow action when message missing" !(...) ->
+    const $attrs = do
+      confirm: void
+
+    expect railsConfirmCtrl.allowAction($attrs) .toBeFalsy!
+    expect confirmSpy .not.toHaveBeenCalled!
+
+  it "shouldn't allow action when cancel confirm" !(...) ->
+    confirmSpy := confirmSpy.andReturn false
+    const $attrs = do
+      confirm: 'iMessage'
+
+    expect railsConfirmCtrl.allowAction($attrs) .toBeFalsy!
+    expect confirmSpy .toHaveBeenCalled!
+
+  it 'should allow action when message provided' !(...) ->
+    confirmSpy := confirmSpy.andReturn true
+    const $attrs = do
+      confirm: 'iMessage'
+
+    expect railsConfirmCtrl.allowAction($attrs) .toBeTruthy!
+    expect confirmSpy .toHaveBeenCalled!
+
 
 describe 'RailsRemoteFormCtrl' !(...) ->
   railsRemoteFormCtrl = $scope = void
@@ -232,6 +279,29 @@ describe 'remote directive' !(...) ->
     $element.find 'input' .eq 1 .click!
     $httpBackend.flush!
     expect confirmSpy .not.toHaveBeenCalled!
+    $element.remove!
+
+  it 'should work with confirm directive' !(...) ->
+    const EXPECTED_NAME = 'angular-ujs'
+    const confirmSpy = spyOn window, 'confirm' .andReturn true
+    
+    $httpBackend.expectPOST '/users' do
+      name: EXPECTED_NAME
+    .respond 201
+
+    const $element = $compile('''
+      <form method="POST" action="/users" data-confirm="Are u sure?" data-remote="user">
+        <input ng-model="user.name" type="text">
+        <input type='submit'>
+      </form>
+    ''')($scope)
+    $document.find 'body' .append $element
+
+    $element.find 'input' .eq 0 .val EXPECTED_NAME .change!
+    $scope.$digest!
+    
+    $element.find 'input' .eq 1 .click!
+    $httpBackend.flush!
     $element.remove!
 
 
