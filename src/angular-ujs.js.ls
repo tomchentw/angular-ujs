@@ -10,6 +10,10 @@ angular.module 'angular.ujs' <[]>
       $event.stopPropagation!
     answer
 
+  noopRemoteFormCtrl: !->
+    @submit = ->
+      then: angular.noop
+
 .controller 'RailsRemoteFormCtrl' <[
         $scope  $http
 ]> ++ !($scope, $http) ->

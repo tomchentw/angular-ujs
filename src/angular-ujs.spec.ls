@@ -39,6 +39,20 @@ describe 'rails service' !(...) ->
       confirmSpy.andReturn null
       expect railsService.confirmAction(MESSAGE, mockEvent) .toBeFalsy!
 
+  describe 'noopRemoteFormCtrl' !(...) ->
+    it 'should be defined' !(...) ->
+      expect railsService.noopRemoteFormCtrl .toBeDefined!
+
+    it 'should be created with new' !(...) ->
+      expect new railsService.noopRemoteFormCtrl .toBeDefined!
+
+    it 'should return controller like RailsRemoteFormCtrl' !(...) ->
+      const noopCtrl = new railsService.noopRemoteFormCtrl
+      expect noopCtrl.submit .toBeDefined!
+      
+      const promise = noopCtrl.submit!
+      expect promise.then .toBeDefined!
+
 describe 'RailsRemoteFormCtrl' !(...) ->
   railsRemoteFormCtrl = $scope = void
 
