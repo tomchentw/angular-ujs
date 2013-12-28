@@ -9,3 +9,19 @@ angular.module 'angular.ujs' <[]>
       $event.preventDefault!
       $event.stopPropagation!
     answer
+
+.controller 'RailsRemoteFormCtrl' <[
+        $scope  $http
+]> ++ !($scope, $http) ->
+    const successCallback = !(response) ->
+      $scope.$emit 'rails:remote:success' response
+
+    const errorCallback = !(response) ->
+      $scope.$emit 'rails:remote:error' response
+
+    @submit = ($form, modelName) ->
+      $http do
+        method: $form.attr 'method'
+        url: $form.attr 'action'
+        data: $scope[modelName]
+      .then successCallback, errorCallback
