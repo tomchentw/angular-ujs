@@ -6,6 +6,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-livescript');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-release');
   // Project configuration.
   /*jshint scripturl:true*/
   grunt.initConfig({
@@ -76,6 +77,14 @@ module.exports = function(grunt) {
       },
       watch: {
         background: true
+      },
+      continuous: {
+        singleRun: true
+      }
+    },
+    release: {
+      options: {
+        npm: false
       }
     }
   });
@@ -84,6 +93,6 @@ module.exports = function(grunt) {
   grunt.registerTask('watch', ['karma:watch', 'delta']);
   //
   grunt.registerTask('build', ['livescript:compile', 'uglify:compile', 'copy:rubygem'])
-  // grunt.registerTask('test', ['livescript:continuous', 'karma:continuous']);
-  // grunt.registerTask('default', ['build', 'test']);
+  grunt.registerTask('test', ['livescript:watch', 'karma:continuous']);
+  grunt.registerTask('default', ['build', 'test']);
 };
