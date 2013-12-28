@@ -1,5 +1,11 @@
 /*global module:false*/
 module.exports = function(grunt) {
+  // These plugins provide necessary tasks.
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-livescript');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   // Project configuration.
   /*jshint scripturl:true*/
   grunt.initConfig({
@@ -17,15 +23,25 @@ module.exports = function(grunt) {
       ' * Licensed [<%= pkg.license.type %>](<%= pkg.license.url %>)\n' +
       ' */\n',
     // Task configuration.
-    livescript: { compile: {
-        src: '<%= fdr.src %><%= pkg.name %>.js.ls',
-        dest: '<%= fdr.dest %><%= pkg.name %>.js'
-      },          continuous: {
+    delta: {
+      ls: {
+        files: ['<%= fdr.src %><%= pkg.name %>.*.ls'],
+        tasks: ['livescript:watch']
+      },
+      js: {
+        files: ['<%= fdr.tmp %><%= pkg.name %>.*.ls'],
+        tasks: ['karma:watch:run']
+      }
+    },
+    livescript: { watch: {
         expand: true,
         cwd: '<%= fdr.src %>',
         src: '<%= pkg.name %>.*.ls',
         dest: '<%= fdr.tmp %>',
         filter: 'isFile'
+      },          compile: {
+        src: '<%= fdr.src %><%= pkg.name %>.js.ls',
+        dest: '<%= fdr.dest %><%= pkg.name %>.js'
       }
     },
     uglify: { compile: {
@@ -50,20 +66,23 @@ module.exports = function(grunt) {
           'misc/test-lib/angular-mocks.1.2.6.js',
           '<%= fdr.tmp %><%= pkg.name %>.*.ls'
         ],
-        browsers: ['Chrome']
+        browsers: ['Chrome'],
+        port: 9018,
+        runnerPort: 9100,
+        colors: true,
+        autoWatch: false,
+        singleRun: false
       },
-      continuous: {
-        singleRun: true
+      watch: {
+        background: true
       }
     }
   });
-  // These plugins provide necessary tasks.
-  grunt.loadNpmTasks('grunt-livescript');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-karma');
+  //
+  grunt.renameTask('watch', 'delta');
+  grunt.registerTask('watch', ['karma:watch', 'delta']);
   //
   grunt.registerTask('build', ['livescript:compile', 'uglify:compile', 'copy:rubygem'])
-  grunt.registerTask('test', ['livescript:continuous', 'karma:continuous']);
-  grunt.registerTask('default', ['build', 'test']);
+  // grunt.registerTask('test', ['livescript:continuous', 'karma:continuous']);
+  // grunt.registerTask('default', ['build', 'test']);
 };
