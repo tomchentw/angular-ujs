@@ -17,7 +17,7 @@
       createMethodFormElement: function($attrs, $scope){
         var metaTags, $form;
         metaTags = getMetaTags();
-        $form = $compile("<form class=\"ng-hide\" method=\"POST\" action=\"" + $attrs.href + "\">\n  <input type=\"text\" name=\"_method\" ng-model=\"link._method\">\n  <input type=\"text\" name=\"" + metaTags['csrf-param'] + "\" value=\"" + metaTags['csrf-token'] + "\">\n</form>")($scope.$new());
+        $form = $compile("<form class=\"ng-hide\" method=\"POST\" action=\"" + $attrs.href + "\">\n  <input type=\"text\" name=\"_method\" ng-model=\"_method\">\n  <input type=\"text\" name=\"" + metaTags['csrf-param'] + "\" value=\"" + metaTags['csrf-token'] + "\">\n</form>")($scope.$new());
         $document.find('body').append($form);
         $form.find('input').eq(0).val($attrs.method).change();
         return $form;
@@ -73,7 +73,7 @@
         return postLinkFn;
       }
     };
-  })).controller('RailsRemoteFormCtrl', ['$scope', '$http'].concat(function($scope, $http){
+  })).controller('RailsRemoteFormCtrl', ['$scope', '$parse', '$http'].concat(function($scope, $parse, $http){
     var successCallback, errorCallback;
     successCallback = function(response){
       $scope.$emit('rails:remote:success', response);
@@ -82,11 +82,26 @@
       $scope.$emit('rails:remote:error', response);
     };
     this.submit = function($form, modelName){
-      console.log($form.scope()[modelName]);
+      var targetScope, data, key, value, own$ = {}.hasOwnProperty;
+      targetScope = $form.scope();
+      data = {};
+      if (modelName + "" !== 'true') {
+        console.log('parsing modelName', modelName);
+        $parse(modelName).assign(data, targetScope.$eval(modelName));
+      } else {
+        for (key in targetScope) if (own$.call(targetScope, key)) {
+          value = targetScope[key];
+          if (key === 'this' || key[0] === '$') {
+            continue;
+          }
+          data[key] = value;
+        }
+      }
+      console.log(data, modelName, modelName === true);
       return $http({
         method: $form.attr('method'),
         url: $form.attr('action'),
-        data: $form.scope()[modelName]
+        data: data
       }).then(successCallback, errorCallback);
     };
   })).directive('remote', ['rails'].concat(function(rails){
@@ -130,7 +145,7 @@
         }
         $form = rails.createMethodFormElement($attrs, $scope);
         console.log('before remoteCtrl.submit');
-        remoteCtrl.submit($form, 'link').then(function(){
+        remoteCtrl.submit($form, true).then(function(){
           $form.scope().$destroy();
           $form.remove();
         });

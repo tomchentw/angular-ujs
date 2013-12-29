@@ -156,7 +156,7 @@ describe 'RailsRemoteFormCtrl' !(...) ->
   it 'should have a submit method' !(...) ->
     expect railsRemoteFormCtrl.submit .toBeDefined!
 
-  it 'should submit form using $http' !(...) ->
+  it 'should submit simple form using $http' !(...) ->
     const EXPECTED_NAME = 'angular-ujs'
     
     $httpBackend.expectPOST '/users' do
@@ -165,7 +165,7 @@ describe 'RailsRemoteFormCtrl' !(...) ->
 
     const $element = $compile('''
       <form method="POST" action="/users">
-        <input ng-model="user.name" type="text">
+        <input ng-model="name" type="text">
       </form>
     ''')($scope)
     $document.find 'body' .append $element
@@ -173,11 +173,11 @@ describe 'RailsRemoteFormCtrl' !(...) ->
     $element.find 'input' .eq 0 .val EXPECTED_NAME .change!
     $scope.$digest!
 
-    railsRemoteFormCtrl.submit $element, 'user'
+    railsRemoteFormCtrl.submit $element, true
     $httpBackend.flush!
     $element.remove!
 
-  it 'should submit complex form using $http' !(...) ->
+  it 'should submit complex, named form using $http' !(...) ->
     const EXPECTED_NAME = 'angular-ujs'
     const EXPECTED_EMAIL = 'developer@tomchentw.com'
     const EXPECTED_TOS = 'read'
@@ -191,13 +191,14 @@ describe 'RailsRemoteFormCtrl' !(...) ->
     $scope.colors = COLORS
 
     $httpBackend.expectPOST '/users' do
-      name: EXPECTED_NAME
-      email: EXPECTED_EMAIL
-      tos: EXPECTED_TOS
-      age: EXPECTED_AGE
-      commit: EXPECTED_COMMIT
-      color: EXPECTED_COLOR
-      desc: EXPECTED_DESC
+      user:
+        name: EXPECTED_NAME
+        email: EXPECTED_EMAIL
+        tos: EXPECTED_TOS
+        age: EXPECTED_AGE
+        commit: EXPECTED_COMMIT
+        color: EXPECTED_COLOR
+        desc: EXPECTED_DESC
     .respond 201
 
     const $element = $compile('''
@@ -262,7 +263,33 @@ describe 'remote directive' !(...) ->
     const confirmSpy = spyOn window, 'confirm'
     
     $httpBackend.expectPOST '/users' do
-      name: EXPECTED_NAME
+      user:
+        name: EXPECTED_NAME
+    .respond 201
+
+    const $element = $compile('''
+      <form method="POST" action="/users" data-remote="true">
+        <input ng-model="user.name" type="text">
+        <input type='submit'>
+      </form>
+    ''')($scope)
+    $document.find 'body' .append $element
+
+    $element.find 'input' .eq 0 .val EXPECTED_NAME .change!
+    $scope.$digest!
+    
+    $element.find 'input' .eq 1 .click!
+    $httpBackend.flush!
+    expect confirmSpy .not.toHaveBeenCalled!
+    $element.remove!
+
+  it 'should submit with named data-remote' !(...) ->
+    const EXPECTED_NAME = 'angular-ujs'
+    const confirmSpy = spyOn window, 'confirm'
+    
+    $httpBackend.expectPOST '/users' do
+      user:
+        name: EXPECTED_NAME
     .respond 201
 
     const $element = $compile('''
@@ -286,11 +313,12 @@ describe 'remote directive' !(...) ->
     spyOn window, 'confirm' .andReturn true
     
     $httpBackend.expectPOST '/users' do
-      name: EXPECTED_NAME
+      user:
+        name: EXPECTED_NAME
     .respond 201
 
     const $element = $compile('''
-      <form method="POST" action="/users" data-confirm="Are u sure?" data-remote="user">
+      <form method="POST" action="/users" data-confirm="Are u sure?" data-remote="true">
         <input ng-model="user.name" type="text">
         <input type='submit'>
       </form>

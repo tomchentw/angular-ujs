@@ -94,7 +94,7 @@ module.exports = function(grunt) {
         command: 'rake build'
       },
       continuous: {
-        command: 'cd misc/test-scenario && bundle && rails s -d && cd ../..'
+        command: 'cd misc/test-scenario && bundle && (RAILS_ENV=test rake db:drop db:migrate) && rails s -d -e=test && cd ../..'
       },
       'post-continuous': {
         command: 'kill $(lsof -i :3000 -t)'

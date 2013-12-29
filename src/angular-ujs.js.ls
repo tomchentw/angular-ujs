@@ -17,7 +17,7 @@ angular.module 'angular.ujs' <[]>
     const metaTags = getMetaTags!
     const $form = $compile("""
       <form class="ng-hide" method="POST" action="#{ $attrs.href }">
-        <input type="text" name="_method" ng-model="link._method">
+        <input type="text" name="_method" ng-model="_method">
         <input type="text" name="#{ metaTags['csrf-param'] }" value="#{ metaTags['csrf-token'] }">
       </form>
     """)($scope.$new!)
@@ -69,8 +69,8 @@ angular.module 'angular.ujs' <[]>
     postLinkFn
 
 .controller 'RailsRemoteFormCtrl' <[
-        $scope  $http
-]> ++ !($scope, $http) ->
+        $scope  $parse  $http
+]> ++ !($scope, $parse, $http) ->
     const successCallback = !(response) ->
       $scope.$emit 'rails:remote:success' response
 
@@ -78,11 +78,20 @@ angular.module 'angular.ujs' <[]>
       $scope.$emit 'rails:remote:error' response
 
     @submit = ($form, modelName) ->
-      console.log $form.scope![modelName]
+      const targetScope = $form.scope!
+      const data = {}
+      if "#modelName" isnt 'true'
+        console.log 'parsing modelName' modelName
+        $parse modelName .assign data, targetScope.$eval(modelName)
+      else
+        for own key, value of targetScope
+          continue if key is 'this' || key.0 is '$'
+          data[key] = value
+      console.log data, modelName, modelName is true
       $http do
         method: $form.attr 'method'
         url: $form.attr 'action'
-        data: $form.scope![modelName]
+        data: data
       .then successCallback, errorCallback
 
 .directive 'remote' <[
@@ -125,7 +134,7 @@ angular.module 'angular.ujs' <[]>
       const $form = rails.createMethodFormElement $attrs, $scope
 
       console.log 'before remoteCtrl.submit'
-      <-! remoteCtrl.submit $form, 'link' .then
+      <-! remoteCtrl.submit $form, true .then
       $form.scope!$destroy!
       $form.remove!
 
