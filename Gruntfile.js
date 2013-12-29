@@ -3,6 +3,8 @@ module.exports = function(grunt) {
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-protractor-runner');
+
   grunt.loadNpmTasks('grunt-livescript');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
@@ -66,7 +68,8 @@ module.exports = function(grunt) {
           'misc/test-lib/jquery-1.10.2.min.js',
           'misc/test-lib/angular.1.2.6.min.js',
           'misc/test-lib/angular-mocks.1.2.6.js',
-          '<%= fdr.tmp %><%= pkg.name %>.*.ls'
+          '<%= fdr.tmp %><%= pkg.name %>.js.ls',
+          '<%= fdr.tmp %><%= pkg.name %>.spec.ls'
         ],
         browsers: ['Chrome'],
         port: 9018,
@@ -82,6 +85,19 @@ module.exports = function(grunt) {
         singleRun: true
       }
     },
+    protractor: {
+      options: {
+        configFile: 'misc/protractorConf.js',
+        keepAlive: true, // If false, the grunt process stops when the test fails.
+        noColor: false, // If true, protractor will not use colors in its output.
+        args: {
+          // Arguments passed to the command
+        }
+      },
+      continuous: {
+
+      }
+    },
     bump: {
       options: {
         commit: true,
@@ -94,9 +110,9 @@ module.exports = function(grunt) {
   });
   //
   grunt.renameTask('watch', 'delta');
-  grunt.registerTask('watch', ['karma:watch', 'delta']);
+  grunt.registerTask('watch', ['livescript:watch', 'karma:watch', 'protractor', 'delta']);
   //
   grunt.registerTask('build', ['livescript:compile', 'uglify:compile', 'copy:rubygem'])
-  grunt.registerTask('test', ['livescript:watch', 'karma:continuous']);
+  grunt.registerTask('test', ['livescript:watch', 'karma:continuous', 'protractor']);
   grunt.registerTask('default', ['build', 'test']);
 };

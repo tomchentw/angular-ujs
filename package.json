@@ -48,6 +48,8 @@
     "karma": "~0.10.8",
     "grunt-karma": "~0.6.2",
     "grunt-contrib-watch": "~0.5.3",
-    "grunt-bump": "0.0.13"
+    "grunt-bump": "0.0.13",
+    "grunt-protractor-runner": "~0.2.0",
+    "protractor": "~0.15.0"
   }
 }
