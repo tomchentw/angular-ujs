@@ -3,6 +3,7 @@ module.exports = function(grunt) {
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-protractor-runner');
 
   grunt.loadNpmTasks('grunt-livescript');
@@ -85,6 +86,20 @@ module.exports = function(grunt) {
         singleRun: true
       }
     },
+    shell: {
+      options: {
+        stdout: true
+      },
+      rubygem: {
+        command: 'rake build'
+      },
+      continuous: {
+        command: 'cd misc/test-scenario && bundle && rails s -d && cd ../..'
+      },
+      'post-continuous': {
+        command: 'kill $(lsof -i :3000 -t)'
+      }
+    },
     protractor: {
       options: {
         configFile: 'misc/protractorConf.js',
@@ -112,7 +127,7 @@ module.exports = function(grunt) {
   grunt.renameTask('watch', 'delta');
   grunt.registerTask('watch', ['livescript:watch', 'karma:watch', 'protractor', 'delta']);
   //
-  grunt.registerTask('build', ['livescript:compile', 'uglify:compile', 'copy:rubygem'])
-  grunt.registerTask('test', ['livescript:watch', 'karma:continuous', 'protractor']);
+  grunt.registerTask('build', ['livescript:compile', 'uglify:compile', 'copy:rubygem', 'shell:rubygem'])
+  grunt.registerTask('test', ['livescript:watch', 'karma:continuous', 'shell:continuous', 'protractor', 'shell:post-continuous']);
   grunt.registerTask('default', ['build', 'test']);
 };

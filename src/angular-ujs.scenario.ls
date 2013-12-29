@@ -1,4 +1,7 @@
 (...) <-! describe 'angular-ujs'
+const ptor = protractor.getInstance!
 
 it 'should work' !(...) ->
-  expect true .toBe true
+  ptor.get '/'
+  # ptor.wait 5000
+  expect element(by.id('home_index')).getText! .toBe 'Home#index'
