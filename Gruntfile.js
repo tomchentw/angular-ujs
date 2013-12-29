@@ -93,6 +93,9 @@ module.exports = function(grunt) {
       rubygem: {
         command: 'rake build'
       },
+      'rubygem-release': {
+        command: 'rake release'
+      },
       continuous: {
         command: 'cd misc/test-scenario && bundle && (RAILS_ENV=test rake db:drop db:migrate) && rails s -d -e=test && cd ../..'
       },
@@ -131,5 +134,5 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['livescript:watch', 'karma:continuous', 'shell:continuous', 'protractor', 'shell:post-continuous']);
   grunt.registerTask('default', ['build', 'test']);
   //
-  grunt.registerTask('release', ['bump-only:patch', 'default', 'bump-commit']);
+  grunt.registerTask('release', ['bump-only:patch', 'default', 'bump-commit', 'rubygem-release']);
 };
