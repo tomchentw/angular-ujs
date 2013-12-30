@@ -15,11 +15,12 @@
     return {
       getMetaTags: getMetaTags,
       createMethodFormElement: function($attrs, $scope){
-        var metaTags, $form;
+        var metaTags, childScope, $form;
         metaTags = getMetaTags();
-        $form = $compile("<form class=\"ng-hide\" method=\"POST\" action=\"" + $attrs.href + "\">\n  <input type=\"text\" name=\"_method\" ng-model=\"_method\">\n  <input type=\"text\" name=\"" + metaTags['csrf-param'] + "\" value=\"" + metaTags['csrf-token'] + "\">\n</form>")($scope.$new());
+        childScope = $scope.$new();
+        childScope._method = $attrs.method;
+        $form = $compile("<form class=\"ng-hide\" method=\"POST\" action=\"" + $attrs.href + "\">\n  <input type=\"text\" name=\"_method\" ng-model=\"_method\">\n  <input type=\"text\" name=\"" + metaTags['csrf-param'] + "\" value=\"" + metaTags['csrf-token'] + "\">\n</form>")(childScope);
         $document.find('body').append($form);
-        $form.find('input').eq(0).val($attrs.method).change();
         return $form;
       },
       noopConfirmCtrl: function(){
