@@ -18,9 +18,11 @@
         var metaTags, childScope, $form;
         metaTags = getMetaTags();
         childScope = $scope.$new();
-        childScope._method = $attrs.method;
         $form = $compile("<form class=\"ng-hide\" method=\"POST\" action=\"" + $attrs.href + "\">\n  <input type=\"text\" name=\"_method\" ng-model=\"_method\">\n  <input type=\"text\" name=\"" + metaTags['csrf-param'] + "\" value=\"" + metaTags['csrf-token'] + "\">\n</form>")(childScope);
         $document.find('body').append($form);
+        childScope.$apply(function(){
+          childScope._method = $attrs.method;
+        });
         return $form;
       },
       noopConfirmCtrl: function(){

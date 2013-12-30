@@ -16,7 +16,6 @@ angular.module 'angular.ujs' <[]>
   createMethodFormElement: ($attrs, $scope) ->
     const metaTags = getMetaTags!
     const childScope = $scope.$new!
-    childScope._method = $attrs.method
 
     const $form = $compile("""
       <form class="ng-hide" method="POST" action="#{ $attrs.href }">
@@ -25,7 +24,8 @@ angular.module 'angular.ujs' <[]>
       </form>
     """)(childScope)
     $document.find 'body' .append $form
-
+    
+    childScope.$apply !-> childScope._method = $attrs.method
     $form
 
   noopConfirmCtrl: !->
