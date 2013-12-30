@@ -134,5 +134,5 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['livescript:watch', 'karma:continuous', 'shell:continuous', 'protractor', 'shell:post-continuous']);
   grunt.registerTask('default', ['build', 'test']);
   //
-  grunt.registerTask('release', ['bump-only:patch', 'default', 'bump-commit', 'rubygem-release']);
+  grunt.registerTask('release', ['bump-only:patch', 'default', 'bump-commit', 'shell:rubygem-release']);
 };
