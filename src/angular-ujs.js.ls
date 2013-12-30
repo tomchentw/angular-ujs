@@ -36,7 +36,9 @@ angular.module 'angular.ujs' <[]>
       event.stopPropagation!
 
   noopRemoteFormCtrl: !->
-    @submit = ->
+    @submit = ($form) ->
+      $form.0.submit!
+      #
       then: angular.noop
 
 .controller 'RailsConfirmCtrl' <[

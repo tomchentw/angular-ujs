@@ -75,9 +75,10 @@ describe 'rails service' !(...) ->
 
     it 'should return controller like RailsRemoteFormCtrl' !(...) ->
       const noopCtrl = new railsService.noopRemoteFormCtrl
-      expect noopCtrl.submit .toBeDefined!
+      const $form = [{submit: !->}]
       
-      const promise = noopCtrl.submit!
+      expect noopCtrl.submit($form) .toBeDefined!
+      const promise = noopCtrl.submit($form)
       expect promise.then .toBeDefined!
 
   describe 'noopConfirmCtrl' !(...) ->
