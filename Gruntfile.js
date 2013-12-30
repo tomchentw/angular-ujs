@@ -97,10 +97,10 @@ module.exports = function(grunt) {
         command: 'rake release'
       },
       continuous: {
-        command: 'cd misc/test-scenario && bundle && (RAILS_ENV=test rake db:drop db:migrate) && rails s -d -e=test && cd ../..'
+        command: 'cd misc/test-scenario && bundle && (RAILS_ENV=test rake db:drop db:migrate) && rails s -d -e=test -p 2999 && cd ../..'
       },
       'post-continuous': {
-        command: 'kill $(lsof -i :3000 -t)'
+        command: 'kill $(lsof -i :2999 -t)'
       }
     },
     protractor: {
