@@ -15,15 +15,17 @@ angular.module 'angular.ujs' <[]>
 
   createMethodFormElement: ($attrs, $scope) ->
     const metaTags = getMetaTags!
+    const childScope = $scope.$new!
+    childScope._method = $attrs.method
+
     const $form = $compile("""
       <form class="ng-hide" method="POST" action="#{ $attrs.href }">
         <input type="text" name="_method" ng-model="_method">
         <input type="text" name="#{ metaTags['csrf-param'] }" value="#{ metaTags['csrf-token'] }">
       </form>
-    """)($scope.$new!)
+    """)(childScope)
     $document.find 'body' .append $form
 
-    $form.find 'input' .eq 0 .val $attrs.method .change!
     $form
 
   noopConfirmCtrl: !->
