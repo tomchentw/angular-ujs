@@ -33,7 +33,8 @@
         };
       },
       noopRemoteFormCtrl: function(){
-        this.submit = function(){
+        this.submit = function($form){
+          $form[0].submit();
           return {
             then: angular.noop
           };
