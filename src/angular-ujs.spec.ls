@@ -31,53 +31,6 @@ describe '$getRailsCSRF conditional inject' !(...) ->
     expect metaTags['csrf-token'] .toBe 'qwertyuiopasdfghjklzxcvbnm='
 
 
-describe 'rails service' !(...) ->
-  const MOCK_META_TAGS = '''
-    <meta content="authenticity_token" name="csrf-param">
-    <meta content="qwertyuiopasdfghjklzxcvbnm=" name="csrf-token">
-  '''
-
-  railsService = void
-
-  beforeEach inject !(rails) ->
-    railsService  := rails
-
-
-  const appendMetaTags = (template || MOCK_META_TAGS) ->
-    const $meta = angular.element template
-    $document.find 'head' .append $meta
-    $meta
-
-  describe 'getMetaTags' !(...) ->
-    
-    it 'should return object' !(...) ->
-      expect typeof! railsService.getMetaTags! .toBe 'Object'
-
-    it 'should return added meta tags' !(...) ->
-      const $meta = appendMetaTags '<meta content="authenticity_token" name="csrf-param">'
-      const metaTags = railsService.getMetaTags!
-
-      expect metaTags['csrf-param'] .toBe 'authenticity_token'
-
-    it 'should return csrf meta tags' !(...) ->
-      const $meta = appendMetaTags!
-      const metaTags = railsService.getMetaTags!
-
-      expect metaTags['csrf-param'] .toBe 'authenticity_token'
-      expect metaTags['csrf-token'] .toBe 'qwertyuiopasdfghjklzxcvbnm='
-
-  describe 'createMethodFormElement' !(...) ->
-    const $attrs = do
-      href: '/admin/login'
-      method: 'PUT'
-
-    it 'should return compiled form element' !(...) ->
-      appendMetaTags!
-      const $form = railsService.createMethodFormElement $attrs, $rootScope
-
-      expect $form.prop('tagName') .toBe 'FORM'
-      expect $form.scope! .toBeDefined!
-
   # describe 'noopRemoteFormCtrl' !(...) ->
     
   #   it 'should be defined' !(...) ->
@@ -145,8 +98,6 @@ describe 'RailsConfirmCtrl' !(...) ->
   it 'should have a denyDefaultAction method' !(...) ->
     expect railsConfirmCtrl.denyDefaultAction .toBeDefined!
 
-
-
   it 'should have a allowAction method' !(...) ->
     expect railsConfirmCtrl.allowAction .toBeDefined!
 
@@ -165,7 +116,7 @@ describe 'RailsConfirmCtrl' !(...) ->
     expect railsConfirmCtrl.allowAction($attrs) .toBeFalsy!
     expect confirmSpy .toHaveBeenCalled!
 
-  it 'should allow action when message provided' !(...) ->
+  it 'should allow action when message provided and confirmed' !(...) ->
     confirmSpy := confirmSpy.andReturn true
     const $attrs = do
       confirm: 'iMessage'
@@ -285,21 +236,21 @@ describe 'remote directive' !(...) ->
   afterEach !(...) ->
     $scope.$destroy!
 
-  it "shouldn't activate without 'data-' prefix" !(...) ->    
-    const $element = $compile('''
-      <form method="POST" action="/users" remote="user">
-        <input type='submit'>
-      </form>
-    ''')($scope)
-    $document.find 'body' .append $element
+  # it "shouldn't activate without 'data-' prefix" !(...) ->    
+  #   const $element = $compile('''
+  #     <form method="POST" action="/users" remote="user">
+  #       <input type='submit'>
+  #     </form>
+  #   ''')($scope)
+  #   $document.find 'body' .append $element
     
-    $element.on 'submit' !(event) ->
-      expect event.defaultPrevented .toBeFalsy!
-      event.preventDefault!
-      event.stopPropagation!
-      $element.remove!
+  #   $element.on 'submit' !(event) ->
+  #     expect event.defaultPrevented .toBeFalsy!
+  #     event.preventDefault!
+  #     event.stopPropagation!
+  #     $element.remove!
 
-    $element.find 'input' .eq 1 .click!
+  #   $element.find 'input' .eq 1 .click!
 
   it 'should submit using $http for form element' !(...) ->
     const EXPECTED_NAME = 'angular-ujs'
@@ -376,34 +327,34 @@ describe 'remote directive' !(...) ->
     $element.remove!
 
 
-describe 'method directive' !(...) ->
-  $scope = void
+# describe 'method directive' !(...) ->
+#   $scope = void
 
-  beforeEach !(...) ->
-    $scope       := $rootScope.$new!
+#   beforeEach !(...) ->
+#     $scope       := $rootScope.$new!
 
-  afterEach !(...) ->
-    $scope.$destroy!
+#   afterEach !(...) ->
+#     $scope.$destroy!
 
-  it "shouldn't activate without 'data-' prefix" !(...) ->
-    clicked = false
-    runs !->
-      const $element = $compile('''
-        <a href="/users/sign_out" method="DELETE">SignOut</a>
-      ''')($scope)
-      $document.find 'body' .append $element
+#   it "shouldn't activate without 'data-' prefix" !(...) ->
+#     clicked = false
+#     runs !->
+#       const $element = $compile('''
+#         <a href="/users/sign_out" method="DELETE">SignOut</a>
+#       ''')($scope)
+#       $document.find 'body' .append $element
       
-      $element.on 'click' !(event) ->
-        event.preventDefault!
-        event.stopPropagation!
-        $element.remove!
-        clicked := true
+#       $element.on 'click' !(event) ->
+#         event.preventDefault!
+#         event.stopPropagation!
+#         $element.remove!
+#         clicked := true
 
-      $element.click!
+#       $element.click!
 
-    waitsFor ->
-      clicked
-    , 'anchor should be clicked', 500
+#     waitsFor ->
+#       clicked
+#     , 'anchor should be clicked', 500
 
 describe 'method directive with remote directive' !(...) ->
   $scope = void

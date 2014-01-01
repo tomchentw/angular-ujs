@@ -31,51 +31,9 @@ angular.module 'angular.ujs' <[]>
     #
     then: angular.noop
 
-.factory 'rails' <[
-       $window  $document  $compile
-]> ++ ($window, $document, $compile) ->
-
-  const getMetaTags = ->
-    const metas       = {}
-    const metasArray  = $document.find 'meta'
-    for i from 0 til metasArray.length
-      const meta = metasArray.eq i
-      metas[meta.attr 'name'] = meta.attr 'content'
-    metas
- 
-  getMetaTags: getMetaTags
-
-  createMethodFormElement: ($attrs, $scope) ->
-    const metaTags = getMetaTags!
-    const childScope = $scope.$new!
-
-    const $form = $compile("""
-      <form class="ng-hide" method="POST" action="#{ $attrs.href }">
-        <input type="text" name="_method" ng-model="_method">
-        <input type="text" name="#{ metaTags['csrf-param'] }" value="#{ metaTags['csrf-token'] }">
-      </form>
-    """)(childScope)
-    $document.find 'body' .append $form
-    
-    childScope.$apply !-> childScope._method = $attrs.method
-    $form
-
-  noopConfirmCtrl: !->
-    @allowAction = -> true
-
-    @denyDefaultAction = !(event) ->
-      event.preventDefault!
-      event.stopPropagation!
-
-  noopRemoteFormCtrl: !->
-    @submit = ($form) ->
-      $form.0.submit!
-      #
-      then: angular.noop
-
 .controller 'RailsConfirmCtrl' <[
-        $window  rails
-]> ++ !($window, rails) ->
+        $window
+]> ++ !($window) ->
 
   @allowAction = ($attrs) ->
     const message = $attrs.confirm
@@ -116,13 +74,12 @@ angular.module 'angular.ujs' <[]>
       const targetScope = $form.scope!
       const data = {}
       if "#modelName" isnt 'true'
-        console.log 'parsing modelName' modelName
         $parse modelName .assign data, targetScope.$eval(modelName)
       else
         for own key, value of targetScope
           continue if key is 'this' || key.0 is '$'
           data[key] = value
-      console.log data, modelName, modelName is true
+      #
       $http do
         method: $form.attr 'method'
         url: $form.attr 'action'
@@ -158,28 +115,34 @@ angular.module 'angular.ujs' <[]>
     postLinkFn
 
 .directive 'method' <[
-       $controller  rails
-]> ++ ($controller, rails) ->
+       $controller  $compile  $document  $getRailsCSRF
+]> ++ ($controller, $compile, $document, $getRailsCSRF) ->
 
   const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
     const [
       confirmCtrl || $controller 'noopRailsConfirmCtrl' {$scope}
       remoteCtrl  || $controller 'noopRailsRemoteFormCtrl' {$scope}
     ] = $ctrls
-    console.log remoteCtrl
 
     const onClickHandler = !(event) ->
-      console.log 'onClickHandler'
       confirmCtrl.denyDefaultAction event if confirmCtrl.allowAction $attrs
-      
-      const $form = rails.createMethodFormElement $attrs, $scope
 
-      console.log 'before remoteCtrl.submit'
+      const metaTags    = $getRailsCSRF!
+      const childScope  = $scope.$new!
+      const $form       = $compile("""
+        <form class="ng-hide" method="POST" action="#{ $attrs.href }">
+          <input type="text" name="_method" ng-model="_method">
+          <input type="text" name="#{ metaTags['csrf-param'] }" value="#{ metaTags['csrf-token'] }">
+        </form>
+      """)(childScope)
+      $document.find 'body' .append $form
+      
+      childScope.$apply !-> childScope._method = $attrs.method
+
       <-! remoteCtrl.submit $form, true .then
-      $form.scope!$destroy!
+      childScope.$destroy!
       $form.remove!
 
-    console.log 'setup onClickHandler'
     $element.on 'click' onClickHandler
     $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
 
@@ -189,4 +152,3 @@ angular.module 'angular.ujs' <[]>
   compile: (tElement, tAttrs) ->
     return if tAttrs.$attr.method isnt 'data-method'
     postLinkFn
-
