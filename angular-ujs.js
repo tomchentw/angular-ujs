@@ -1,63 +1,58 @@
 (function(){
-  angular.module('angular.ujs', []).factory('rails', ['$window', '$document', '$compile'].concat(function($window, $document, $compile){
-    var getMetaTags;
-    getMetaTags = function(){
-      var metas, metasArray, i$, to$, i, meta;
-      metas = {};
-      metasArray = $document.find('meta');
-      for (i$ = 0, to$ = metasArray.length; i$ < to$; ++i$) {
-        i = i$;
-        meta = metasArray.eq(i);
-        metas[meta.attr('name')] = meta.attr('content');
-      }
-      return metas;
+  var denyDefaultAction;
+  denyDefaultAction = function(event){
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  angular.module('angular.ujs', []).config(['$provide', '$injector'].concat(function($provide, $injector){
+    var NAME;
+    NAME = '$getRailsCSRF';
+    if ($injector.has(NAME)) {
+      return;
+    }
+    /*
+     * Maybe provided in `ng-rails-csrf`
+     */
+    $provide.factory(NAME, ['$document'].concat(function($document){
+      return function(){
+        var metas, i$, ref$, len$, meta;
+        metas = {};
+        for (i$ = 0, len$ = (ref$ = $document[0].querySelectorAll('meta[name^="csrf-"]')).length; i$ < len$; ++i$) {
+          meta = ref$[i$];
+          meta = angular.element(meta);
+          metas[meta.attr('name')] = meta.attr('content');
+        }
+        return metas;
+      };
+    }));
+  })).controller('noopRailsConfirmCtrl', function(){
+    this.allowAction = function(){
+      return true;
     };
-    return {
-      getMetaTags: getMetaTags,
-      createMethodFormElement: function($attrs, $scope){
-        var metaTags, childScope, $form;
-        metaTags = getMetaTags();
-        childScope = $scope.$new();
-        $form = $compile("<form class=\"ng-hide\" method=\"POST\" action=\"" + $attrs.href + "\">\n  <input type=\"text\" name=\"_method\" ng-model=\"_method\">\n  <input type=\"text\" name=\"" + metaTags['csrf-param'] + "\" value=\"" + metaTags['csrf-token'] + "\">\n</form>")(childScope);
-        $document.find('body').append($form);
-        childScope.$apply(function(){
-          childScope._method = $attrs.method;
-        });
-        return $form;
-      },
-      noopConfirmCtrl: function(){
-        this.allowAction = function(){
-          return true;
-        };
-        this.denyDefaultAction = function(event){
-          event.preventDefault();
-          event.stopPropagation();
-        };
-      },
-      noopRemoteFormCtrl: function(){
-        this.submit = function($form){
-          $form[0].submit();
-          return {
-            then: angular.noop
-          };
-        };
-      }
+    this.denyDefaultAction = denyDefaultAction;
+  }).controller('noopRailsRemoteFormCtrl', function(){
+    this.submit = function($form){
+      $form[0].submit();
+      return {
+        then: angular.noop
+      };
     };
-  })).controller('RailsConfirmCtrl', ['$window', 'rails'].concat(function($window, rails){
-    rails.noopConfirmCtrl.apply(this, arguments);
+  }).controller('RailsConfirmCtrl', ['$window'].concat(function($window){
     this.allowAction = function($attrs){
       var message;
       message = $attrs.confirm;
       return angular.isDefined(message) && $window.confirm(message);
     };
-  })).directive('confirm', [].concat(function(){
+    this.denyDefaultAction = denyDefaultAction;
+  })).directive('confirm', function(){
     var postLinkFn;
     postLinkFn = function($scope, $element, $attrs, $ctrls){
       var confirmCtrl, onClickHandler;
       confirmCtrl = $ctrls[0];
       onClickHandler = function(event){
+        confirmCtrl.denyDefaultAction(event);
         if (!confirmCtrl.allowAction($attrs)) {
-          confirmCtrl.denyDefaultAction(event);
+          return;
         }
       };
       $element.on('click', onClickHandler);
@@ -68,6 +63,7 @@
     return {
       restrict: 'A',
       require: ['confirm'],
+      controller: 'RailsConfirmCtrl',
       compile: function(tElement, tAttrs){
         var $attr;
         $attr = tAttrs.$attr;
@@ -77,7 +73,7 @@
         return postLinkFn;
       }
     };
-  })).controller('RailsRemoteFormCtrl', ['$scope', '$parse', '$http'].concat(function($scope, $parse, $http){
+  }).controller('RailsRemoteFormCtrl', ['$scope', '$parse', '$http'].concat(function($scope, $parse, $http){
     var successCallback, errorCallback;
     successCallback = function(response){
       $scope.$emit('rails:remote:success', response);
@@ -86,11 +82,10 @@
       $scope.$emit('rails:remote:error', response);
     };
     this.submit = function($form, modelName){
-      var targetScope, data, key, value, own$ = {}.hasOwnProperty;
+      var targetScope, data, key, value, config, METHOD, own$ = {}.hasOwnProperty;
       targetScope = $form.scope();
       data = {};
       if (modelName + "" !== 'true') {
-        console.log('parsing modelName', modelName);
         $parse(modelName).assign(data, targetScope.$eval(modelName));
       } else {
         for (key in targetScope) if (own$.call(targetScope, key)) {
@@ -101,21 +96,30 @@
           data[key] = value;
         }
       }
-      console.log(data, modelName, modelName === true);
-      return $http({
-        method: $form.attr('method'),
+      config = {
         url: $form.attr('action'),
+        method: $form.attr('method'),
         data: data
-      }).then(successCallback, errorCallback);
+      };
+      METHOD = data._method;
+      if (METHOD !== 'GET' && METHOD !== 'POST') {
+        config.headers = {
+          'X-Http-Method-Override': METHOD
+        };
+      }
+      return $http(config).then(successCallback, errorCallback);
     };
-  })).directive('remote', ['rails'].concat(function(rails){
+  })).directive('remote', ['$controller'].concat(function($controller){
     var postLinkFn;
     postLinkFn = function($scope, $element, $attrs, $ctrls){
       var remoteCtrl, confirmCtrl, onSubmitHandler;
-      remoteCtrl = $ctrls[0], confirmCtrl = $ctrls[1] || new rails.noopConfirmCtrl;
+      remoteCtrl = $ctrls[0], confirmCtrl = $ctrls[1] || $controller('noopRailsConfirmCtrl', {
+        $scope: $scope
+      });
       onSubmitHandler = function(event){
-        if (confirmCtrl.allowAction($attrs)) {
-          confirmCtrl.denyDefaultAction(event);
+        confirmCtrl.denyDefaultAction(event);
+        if (!confirmCtrl.allowAction($attrs)) {
+          return;
         }
         remoteCtrl.submit($element, $attrs.remote);
       };
@@ -135,33 +139,39 @@
         return postLinkFn;
       }
     };
-  })).directive('method', ['rails'].concat(function(rails){
+  })).directive('method', ['$controller', '$compile', '$document', '$getRailsCSRF'].concat(function($controller, $compile, $document, $getRailsCSRF){
     var postLinkFn;
     postLinkFn = function($scope, $element, $attrs, $ctrls){
-      var remoteCtrl, confirmCtrl, onClickHandler;
-      remoteCtrl = $ctrls[0] || new rails.noopRemoteFormCtrl, confirmCtrl = $ctrls[1] || new rails.noopConfirmCtrl;
-      console.log(remoteCtrl);
+      var confirmCtrl, remoteCtrl, onClickHandler;
+      confirmCtrl = $ctrls[0] || $controller('noopRailsConfirmCtrl', {
+        $scope: $scope
+      }), remoteCtrl = $ctrls[1] || $controller('noopRailsRemoteFormCtrl', {
+        $scope: $scope
+      });
       onClickHandler = function(event){
-        var $form;
-        console.log('onClickHandler');
+        var metaTags, childScope, $form;
         if (confirmCtrl.allowAction($attrs)) {
           confirmCtrl.denyDefaultAction(event);
         }
-        $form = rails.createMethodFormElement($attrs, $scope);
-        console.log('before remoteCtrl.submit');
+        metaTags = $getRailsCSRF();
+        childScope = $scope.$new();
+        $form = $compile("<form class=\"ng-hide\" method=\"POST\" action=\"" + $attrs.href + "\">\n  <input type=\"text\" name=\"_method\" ng-model=\"_method\">\n  <input type=\"text\" name=\"" + metaTags['csrf-param'] + "\" value=\"" + metaTags['csrf-token'] + "\">\n</form>")(childScope);
+        $document.find('body').append($form);
+        childScope.$apply(function(){
+          childScope._method = $attrs.method;
+        });
         remoteCtrl.submit($form, true).then(function(){
-          $form.scope().$destroy();
+          childScope.$destroy();
           $form.remove();
         });
       };
-      console.log('setup onClickHandler');
       $element.on('click', onClickHandler);
       $scope.$on('$destroy', function(){
         $element.off('click', onClickHandler);
       });
     };
     return {
-      require: ['?remote', '?confirm'],
+      require: ['?confirm', '?remote'],
       restrict: 'A',
       compile: function(tElement, tAttrs){
         if (tAttrs.$attr.method !== 'data-method') {
