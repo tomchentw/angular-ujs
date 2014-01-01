@@ -1,10 +1,14 @@
 (...) <-! describe 'angular-ujs'
 const ptor = protractor.getInstance!
+ROOT_URL = void
 
 it 'should work' !(...) ->
   ptor.get '/'
   # ptor.wait 5000
   expect element(by.id('home_index')).getText! .toBe 'Home#index'
+  ROOT_URL := browser.driver.getCurrentUrl!
+
+  expect ROOT_URL .toBeDefined!
 
 it 'should sign up' !(...) ->
   ptor.get '/users/sign_up'
@@ -16,3 +20,9 @@ it 'should sign up' !(...) ->
 
   browser.driver.sleep 500
   expect element(by.binding 'success').getText! .toBe 'Yo!'
+
+it 'should sign out' !(...) ->
+  element(by.id 'sign_out').click!
+  browser.driver.sleep 500
+
+  expect browser.driver.getCurrentUrl! .toBe ROOT_URL

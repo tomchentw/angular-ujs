@@ -18,3 +18,5 @@
 <% end %>
 
 <%= render "devise/shared/links" %>
+
+<%= link_to 'Sign Out', destroy_user_session_path, id: 'sign_out', data: {method: :delete} %>
