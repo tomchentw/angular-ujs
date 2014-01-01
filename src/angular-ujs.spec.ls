@@ -109,6 +109,28 @@ describe 'rails service' !(...) ->
       expect noopCtrl.denyDefaultAction .toBeDefined!
       expect noopCtrl.allowAction! .toBeTruthy!
 
+describe 'noopRailsConfirmCtrl' !(...) ->
+  noopCtrl = $scope = void
+
+  beforeEach inject !($controller) ->
+    $scope    := $rootScope.$new!
+    noopCtrl  := $controller 'noopRailsConfirmCtrl' {$scope}
+
+  afterEach !(...) ->
+    $scope.$destroy!
+
+  it 'should be like RailsConfirmCtrl' !(...) ->    
+    expect noopCtrl.allowAction .toBeDefined!
+    expect noopCtrl.denyDefaultAction .toBeDefined!
+    expect noopCtrl.allowAction! .toBeTruthy!
+
+  it 'should supress event when denyDefaultAction called' !(...) ->
+    const event = $.Event 'click'
+    noopCtrl.denyDefaultAction event
+
+    expect event.isDefaultPrevented! .toBeTruthy!
+    expect event.isPropagationStopped! .toBeTruthy!
+
 describe 'RailsConfirmCtrl' !(...) ->
   railsConfirmCtrl = confirmSpy = $scope = void
 
@@ -123,12 +145,7 @@ describe 'RailsConfirmCtrl' !(...) ->
   it 'should have a denyDefaultAction method' !(...) ->
     expect railsConfirmCtrl.denyDefaultAction .toBeDefined!
 
-  it 'should supress event when denyDefaultAction called' !(...) ->
-    const event = $.Event 'click'
-    railsConfirmCtrl.denyDefaultAction event
 
-    expect event.isDefaultPrevented! .toBeTruthy!
-    expect event.isPropagationStopped! .toBeTruthy!
 
   it 'should have a allowAction method' !(...) ->
     expect railsConfirmCtrl.allowAction .toBeDefined!

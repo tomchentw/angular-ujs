@@ -1,3 +1,7 @@
+const denyDefaultAction = !(event) ->
+  event.preventDefault!
+  event.stopPropagation!
+
 angular.module 'angular.ujs' <[]>
 .config <[
         $provide  $injector
@@ -15,6 +19,11 @@ angular.module 'angular.ujs' <[]>
       meta = angular.element meta
       metas[meta.attr 'name'] = meta.attr 'content'
     metas
+
+.controller 'noopRailsConfirmCtrl' !->
+  @allowAction = -> true
+
+  @denyDefaultAction = denyDefaultAction
 
 .factory 'rails' <[
        $window  $document  $compile
@@ -61,11 +70,12 @@ angular.module 'angular.ujs' <[]>
 .controller 'RailsConfirmCtrl' <[
         $window  rails
 ]> ++ !($window, rails) ->
-  rails.noopConfirmCtrl ...
-  
+
   @allowAction = ($attrs) ->
     const message = $attrs.confirm
     angular.isDefined message and $window.confirm message
+
+  @denyDefaultAction = denyDefaultAction
 
 .directive 'confirm' <[
 
