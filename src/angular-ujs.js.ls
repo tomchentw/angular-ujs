@@ -55,10 +55,13 @@ angular.module 'angular.ujs' <[]>
 
   restrict: 'A'
   require: <[confirm]>
+  controller: 'RailsConfirmCtrl'
   compile: (tElement, tAttrs) ->
     const {$attr} = tAttrs
+    #
+    # Do nothing here, just inject RailsConfirmCtrl
+    #
     return if $attr.confirm isnt 'data-confirm' or $attr.remote is 'data-remote' or $attr.method is 'data-method'
-    
     postLinkFn
 
 .controller 'RailsRemoteFormCtrl' <[

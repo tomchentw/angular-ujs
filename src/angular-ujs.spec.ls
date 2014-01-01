@@ -304,7 +304,7 @@ describe 'remote directive' !(...) ->
 
   it 'should work with confirm directive' !(...) ->
     const EXPECTED_NAME = 'angular-ujs'
-    spyOn window, 'confirm' .andReturn true
+    const confirmSpy = spyOn window, 'confirm' .andReturn true
     
     $httpBackend.expectPOST '/users' do
       user:
@@ -323,6 +323,9 @@ describe 'remote directive' !(...) ->
     $scope.$digest!
     
     $element.find 'input' .eq 1 .click!
+
+    expect confirmSpy .toHaveBeenCalled!
+
     $httpBackend.flush!
     $element.remove!
 
