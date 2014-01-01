@@ -131,8 +131,8 @@ module.exports = function(grunt) {
   grunt.registerTask('watch', ['livescript:watch', 'karma:watch', 'delta']);
   //
   grunt.registerTask('build', ['livescript:compile', 'uglify:compile', 'copy:rubygem', 'shell:rubygem'])
-  grunt.registerTask('test', ['livescript:watch', 'karma:continuous', 'shell:continuous', 'protractor', 'shell:post-continuous']);
-  grunt.registerTask('default', ['build', 'test']);
+  grunt.registerTask('continuous', ['livescript:watch', 'karma:continuous', 'shell:continuous', 'protractor', 'shell:post-continuous']);
+  grunt.registerTask('default', ['build', 'continuous']);
   //
   grunt.registerTask('release', ['bump-only:patch', 'default', 'bump-commit', 'shell:rubygem-release']);
 };
