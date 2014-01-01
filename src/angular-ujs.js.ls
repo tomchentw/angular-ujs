@@ -83,9 +83,7 @@ angular.module 'angular.ujs' <[]>
 
   @denyDefaultAction = denyDefaultAction
 
-.directive 'confirm' <[
-
-]> ++ ->
+.directive 'confirm' ->
 
   const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
     const confirmCtrl = $ctrls.0
@@ -132,11 +130,14 @@ angular.module 'angular.ujs' <[]>
       .then successCallback, errorCallback
 
 .directive 'remote' <[
-       rails
-]> ++ (rails) ->
+       $controller
+]> ++ ($controller) ->
 
   const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
-    const [remoteCtrl, confirmCtrl || new rails.noopConfirmCtrl] = $ctrls
+    const [
+      remoteCtrl
+      confirmCtrl || $controller 'noopRailsConfirmCtrl' {$scope}
+    ] = $ctrls
     #
     const onSubmitHandler = !(event) ->
       confirmCtrl.denyDefaultAction event if confirmCtrl.allowAction $attrs
@@ -157,11 +158,14 @@ angular.module 'angular.ujs' <[]>
     postLinkFn
 
 .directive 'method' <[
-       rails
-]> ++ (rails) ->
+       $controller  rails
+]> ++ ($controller, rails) ->
 
   const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
-    const [remoteCtrl || new rails.noopRemoteFormCtrl, confirmCtrl || new rails.noopConfirmCtrl] = $ctrls
+    const [
+      confirmCtrl || $controller 'noopRailsConfirmCtrl' {$scope}
+      remoteCtrl  || $controller 'noopRailsRemoteFormCtrl' {$scope}
+    ] = $ctrls
     console.log remoteCtrl
 
     const onClickHandler = !(event) ->
@@ -180,7 +184,7 @@ angular.module 'angular.ujs' <[]>
     $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
 
 
-  require: <[?remote ?confirm]>
+  require: <[?confirm ?remote]>
   restrict: 'A'
   compile: (tElement, tAttrs) ->
     return if tAttrs.$attr.method isnt 'data-method'

@@ -78,36 +78,36 @@ describe 'rails service' !(...) ->
       expect $form.prop('tagName') .toBe 'FORM'
       expect $form.scope! .toBeDefined!
 
-  describe 'noopRemoteFormCtrl' !(...) ->
+  # describe 'noopRemoteFormCtrl' !(...) ->
     
-    it 'should be defined' !(...) ->
-      expect railsService.noopRemoteFormCtrl .toBeDefined!
+  #   it 'should be defined' !(...) ->
+  #     expect railsService.noopRemoteFormCtrl .toBeDefined!
 
-    it 'should be created with new' !(...) ->
-      expect new railsService.noopRemoteFormCtrl .toBeDefined!
+  #   it 'should be created with new' !(...) ->
+  #     expect new railsService.noopRemoteFormCtrl .toBeDefined!
 
-    it 'should return controller like RailsRemoteFormCtrl' !(...) ->
-      const noopCtrl = new railsService.noopRemoteFormCtrl
-      const $form = [{submit: !->}]
+  #   it 'should return controller like RailsRemoteFormCtrl' !(...) ->
+  #     const noopCtrl = new railsService.noopRemoteFormCtrl
+  #     const $form = [{submit: !->}]
       
-      expect noopCtrl.submit($form) .toBeDefined!
-      const promise = noopCtrl.submit($form)
-      expect promise.then .toBeDefined!
+  #     expect noopCtrl.submit($form) .toBeDefined!
+  #     const promise = noopCtrl.submit($form)
+  #     expect promise.then .toBeDefined!
 
-  describe 'noopConfirmCtrl' !(...) ->
+  # describe 'noopConfirmCtrl' !(...) ->
     
-    it 'should be defined' !(...) ->
-      expect railsService.noopConfirmCtrl .toBeDefined!
+  #   it 'should be defined' !(...) ->
+  #     expect railsService.noopConfirmCtrl .toBeDefined!
 
-    it 'should be created with new' !(...) ->
-      expect new railsService.noopConfirmCtrl .toBeDefined!
+  #   it 'should be created with new' !(...) ->
+  #     expect new railsService.noopConfirmCtrl .toBeDefined!
 
-    it 'should return controller like RailsConfirmCtrl' !(...) ->
-      const noopCtrl = new railsService.noopConfirmCtrl
+  #   it 'should return controller like RailsConfirmCtrl' !(...) ->
+  #     const noopCtrl = new railsService.noopConfirmCtrl
       
-      expect noopCtrl.allowAction .toBeDefined!
-      expect noopCtrl.denyDefaultAction .toBeDefined!
-      expect noopCtrl.allowAction! .toBeTruthy!
+  #     expect noopCtrl.allowAction .toBeDefined!
+  #     expect noopCtrl.denyDefaultAction .toBeDefined!
+  #     expect noopCtrl.allowAction! .toBeTruthy!
 
 describe 'noopRailsConfirmCtrl' !(...) ->
   noopCtrl = $scope = void
