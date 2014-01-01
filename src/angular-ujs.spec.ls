@@ -17,6 +17,19 @@ afterEach !(...) ->
 it 'should start test' !(...) ->
   expect true .toBeTruthy!
 
+describe '$getRailsCSRF conditional inject' !(...) ->
+  const MOCK_META_TAGS = '''
+    <meta content="authenticity_token" name="csrf-param">
+    <meta content="qwertyuiopasdfghjklzxcvbnm=" name="csrf-token">
+  '''
+
+  it 'should return csrf meta tags' inject !($getRailsCSRF) ->
+    $document.find 'head' .append MOCK_META_TAGS
+    const metaTags = $getRailsCSRF!
+
+    expect metaTags['csrf-param'] .toBe 'authenticity_token'
+    expect metaTags['csrf-token'] .toBe 'qwertyuiopasdfghjklzxcvbnm='
+
 
 describe 'rails service' !(...) ->
   const MOCK_META_TAGS = '''

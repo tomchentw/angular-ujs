@@ -1,4 +1,21 @@
 angular.module 'angular.ujs' <[]>
+.config <[
+        $provide  $injector
+]> ++ !($provide, $injector) ->
+  const NAME = '$getRailsCSRF'
+  return if $injector.has NAME
+  /*
+   * Maybe provided in `ng-rails-csrf`
+   */
+  $provide.factory NAME, <[
+         $document
+  ]> ++ ($document) -> ->
+    const metas       = {}
+    for meta in $document.0.querySelectorAll 'meta[name^="csrf-"]'
+      meta = angular.element meta
+      metas[meta.attr 'name'] = meta.attr 'content'
+    metas
+
 .factory 'rails' <[
        $window  $document  $compile
 ]> ++ ($window, $document, $compile) ->

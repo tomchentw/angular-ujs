@@ -128,7 +128,7 @@ module.exports = function(grunt) {
   });
   //
   grunt.renameTask('watch', 'delta');
-  grunt.registerTask('watch', ['livescript:watch', 'karma:watch', 'protractor', 'delta']);
+  grunt.registerTask('watch', ['livescript:watch', 'karma:watch', 'delta']);
   //
   grunt.registerTask('build', ['livescript:compile', 'uglify:compile', 'copy:rubygem', 'shell:rubygem'])
   grunt.registerTask('test', ['livescript:watch', 'karma:continuous', 'shell:continuous', 'protractor', 'shell:post-continuous']);
