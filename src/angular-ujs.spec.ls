@@ -173,6 +173,18 @@ describe 'RailsConfirmCtrl' !(...) ->
     expect railsConfirmCtrl.allowAction($attrs) .toBeTruthy!
     expect confirmSpy .toHaveBeenCalled!
 
+describe 'noopRailsRemoteFormCtrl' !(...) ->
+  noopCtrl = $scope = void
+
+  beforeEach inject !($controller) ->
+    $scope   := $rootScope.$new!
+    noopCtrl := $controller 'noopRailsRemoteFormCtrl' {$scope}
+
+  afterEach !(...) ->
+    $scope.$destroy!
+
+  it 'should have a submit method' !(...) ->
+    expect noopCtrl.submit .toBeDefined!
 
 describe 'RailsRemoteFormCtrl' !(...) ->
   railsRemoteFormCtrl = $scope = void

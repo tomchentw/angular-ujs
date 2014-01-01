@@ -25,6 +25,12 @@ angular.module 'angular.ujs' <[]>
 
   @denyDefaultAction = denyDefaultAction
 
+.controller 'noopRailsRemoteFormCtrl' !->
+  @submit = ($form) ->
+    $form.0.submit!
+    #
+    then: angular.noop
+
 .factory 'rails' <[
        $window  $document  $compile
 ]> ++ ($window, $document, $compile) ->
