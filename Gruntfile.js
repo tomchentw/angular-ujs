@@ -82,6 +82,10 @@ module.exports = function(grunt) {
       watch: {
         background: true
       },
+      travis: {
+        singleRun: true,
+        browsers: ['Firefox']
+      },
       continuous: {
         singleRun: true
       }
@@ -96,8 +100,8 @@ module.exports = function(grunt) {
       'rubygem-release': {
         command: 'rake release'
       },
-      continuous: {
-        command: 'cd misc/test-scenario && bundle && (RAILS_ENV=test rake db:drop db:migrate) && rails s -d -e=test -p 2999 && cd ../..'
+      'pre-continuous': {
+        command: 'cd misc/test-scenario && bundle && (RAILS_ENV=test rake db:drop db:migrate) && rails s -d -e test -p 2999 && cd ../..'
       },
       'post-continuous': {
         command: 'kill $(lsof -i :2999 -t)'
@@ -105,15 +109,19 @@ module.exports = function(grunt) {
     },
     protractor: {
       options: {
-        configFile: 'misc/protractorConf.js',
-        keepAlive: true, // If false, the grunt process stops when the test fails.
-        noColor: false, // If true, protractor will not use colors in its output.
-        args: {
-          // Arguments passed to the command
+        noColor: false
+      },
+      travis: {
+        options: {
+          configFile: 'misc/protractorConf.travis.js',
+          keepAlive: false
         }
       },
       continuous: {
-
+        options: {
+          configFile: 'misc/protractorConf.js',
+          keepAlive: true
+        }
       }
     },
     bump: {
@@ -131,8 +139,41 @@ module.exports = function(grunt) {
   grunt.registerTask('watch', ['livescript:watch', 'karma:watch', 'delta']);
   //
   grunt.registerTask('build', ['livescript:compile', 'uglify:compile', 'copy:rubygem', 'shell:rubygem'])
-  grunt.registerTask('continuous', ['livescript:watch', 'karma:continuous', 'shell:continuous', 'protractor', 'shell:post-continuous']);
+  grunt.registerTask('continuous', ['livescript:watch', 'test-karma', 'test-protractor']);
   grunt.registerTask('default', ['build', 'continuous']);
   //
   grunt.registerTask('release', ['bump-only:patch', 'default', 'bump-commit', 'shell:rubygem-release']);
+
+  // from: https://github.com/angular-ui/bootstrap/blob/master/Gruntfile.js
+  grunt.registerTask('test-karma', 'Run tests on singleRun karma server', function () {
+    //this task can be executed in 3 different environments: local, Travis-CI and Jenkins-CI
+    //we need to take settings for each one into account
+    if (process.env.TRAVIS) {
+      grunt.task.run('karma:travis');
+    } else {
+      // var isToRunJenkinsTask = !!this.args.length;
+      // if(grunt.option('coverage')) {
+      //   var karmaOptions = grunt.config.get('karma.options'),
+      //     coverageOpts = grunt.config.get('karma.coverage');
+      //   grunt.util._.extend(karmaOptions, coverageOpts);
+      //   grunt.config.set('karma.options', karmaOptions);
+      // }
+      // grunt.task.run(this.args.length ? 'karma:jenkins' : 'karma:continuous');
+      grunt.task.run('karma:continuous');
+    }
+  });
+  //
+  // run ruby + nodejs on travis-ci
+  //
+  // http://stackoverflow.com/a/18457016/1458162
+  //
+  grunt.registerTask('test-protractor', 'Run tests on protractor server', function () {
+    //this task can be executed in 3 different environments: local, Travis-CI and Jenkins-CI
+    //we need to take settings for each one into account
+    if (process.env.TRAVIS) {
+      grunt.task.run('protractor:travis');
+    } else {
+      grunt.task.run('shell:pre-continuous', 'protractor:continuous', 'shell:post-continuous');
+    }
+  });
 };

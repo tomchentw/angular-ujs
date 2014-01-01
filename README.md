@@ -1,5 +1,7 @@
 # angular-ujs ( [`Angular::Ujs`](https://rubygems.org/gems/angular-ujs) )
 
+[![Build Status](https://secure.travis-ci.org/tomchentw/angular-ujs.png)](http://travis-ci.org/tomchentw/angular-ujs) [![devDependency Status](https://david-dm.org/tomchentw/angular-ujs/dev-status.png?branch=master)](https://david-dm.org/tomchentw/angular-ujs#info=devDependencies)
+
 Ruby on Rails unobtrusive scripting adapter for angularjs ( Without jQuery dependency )
 
 ## Project philosophy
