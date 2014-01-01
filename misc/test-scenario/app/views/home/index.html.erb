@@ -1,2 +1,8 @@
 <h1 id="home_index">Home#index</h1>
 <p>Find me in app/views/home/index.html.erb</p>
+
+<div ng-controller="RemoteFormCtrl">
+  <%= link_to 'Together', home_together_path, id: 'work_together', data: {method: :put, remote: true, confirm: 'Lets GO!'}%>
+
+  <div> {{ success }} </div>
+</div>

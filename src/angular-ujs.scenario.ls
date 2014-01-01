@@ -10,32 +10,48 @@ it 'should work' !(...) ->
 
   expect ROOT_URL .toBeDefined!
 
-it 'should sign up' !(...) ->
-  ptor.get '/users/sign_up'
+describe 'confirm, remote, method directives normal functions' !(...) ->
 
-  element(by.model 'user.email').sendKeys 'developer@tomchentw.com'
-  element(by.model 'user.password').sendKeys 'angular-ujs'
-  element(by.model 'user.password_confirmation').sendKeys 'angular-ujs'
-  element(by.css 'input[name="commit"]').click!
+  it 'should sign up' !(...) ->
+    ptor.get '/users/sign_up'
 
-  browser.driver.sleep 500
-  expect element(by.binding 'success').getText! .toBe 'Yo!'
+    element(by.model 'user.email').sendKeys 'developer@tomchentw.com'
+    element(by.model 'user.password').sendKeys 'angular-ujs'
+    element(by.model 'user.password_confirmation').sendKeys 'angular-ujs'
+    element(by.css 'input[name="commit"]').click!
 
-it 'should sign out' !(...) ->
-  element(by.id 'sign_out').click!
-  browser.driver.sleep 500
+    browser.driver.sleep 500
+    expect element(by.binding 'success').getText! .toBe 'Yo!'
 
-  expect browser.driver.getCurrentUrl! .toBe ROOT_URL
+  it 'should sign out' !(...) ->
+    element(by.id 'sign_out').click!
+    
+    browser.driver.sleep 500
+    expect browser.driver.getCurrentUrl! .toBe ROOT_URL
 
-it 'should confirm and sign in' !(...) ->
-  ptor.get '/users/sign_in'
+  it 'should confirm and sign in' !(...) ->
+    ptor.get '/users/sign_in'
 
-  element(by.model 'user.email').sendKeys 'developer@tomchentw.com'
-  element(by.model 'user.password').sendKeys 'angular-ujs'
-  element(by.css 'input[name="commit"]').click!
+    element(by.model 'user.email').sendKeys 'developer@tomchentw.com'
+    element(by.model 'user.password').sendKeys 'angular-ujs'
+    element(by.css 'input[name="commit"]').click!
 
-  browser.driver.sleep 500
-  browser.driver.switchTo!alert!accept!
+    browser.driver.switchTo!alert!accept!
 
-  browser.driver.sleep 500
-  expect element(by.binding 'success').getText! .toBe 'Yo!'
+    browser.driver.sleep 500
+    expect element(by.binding 'success').getText! .toBe 'Yo!'
+
+  it 'should confirm and sign out' !(...) ->
+    element(by.id 'sign_out').click!
+    browser.driver.switchTo!alert!accept!
+    
+    browser.driver.sleep 500
+    expect browser.driver.getCurrentUrl! .toBe ROOT_URL
+
+  it 'should work together' !(...) ->
+    element(by.id 'work_together').click!
+    browser.driver.switchTo!alert!accept!
+    
+    browser.driver.sleep 500
+    expect element(by.binding 'success').getText! .toBe 'Yo!'
+    

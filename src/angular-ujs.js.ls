@@ -47,7 +47,8 @@ angular.module 'angular.ujs' <[]>
     const confirmCtrl = $ctrls.0
     
     const onClickHandler = !(event) ->
-      confirmCtrl.denyDefaultAction event unless confirmCtrl.allowAction $attrs
+      confirmCtrl.denyDefaultAction event
+      return unless confirmCtrl.allowAction $attrs
 
     $element.on 'click' onClickHandler
     $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
@@ -82,12 +83,20 @@ angular.module 'angular.ujs' <[]>
         for own key, value of targetScope
           continue if key is 'this' || key.0 is '$'
           data[key] = value
-      #
-      $http do
-        method: $form.attr 'method'
+      # 
+      const config = do
         url: $form.attr 'action'
+        method: $form.attr 'method'
         data: data
-      .then successCallback, errorCallback
+      #
+      # Rails 4 bug here:
+      #   http://stackoverflow.com/a/1935237/1458162
+      #
+      const METHOD = data._method
+      if METHOD isnt 'GET' and METHOD isnt 'POST'
+        config.headers = 'X-Http-Method-Override': METHOD
+      #
+      $http config .then successCallback, errorCallback
 
 .directive 'remote' <[
        $controller
@@ -100,7 +109,8 @@ angular.module 'angular.ujs' <[]>
     ] = $ctrls
     #
     const onSubmitHandler = !(event) ->
-      confirmCtrl.denyDefaultAction event if confirmCtrl.allowAction $attrs
+      confirmCtrl.denyDefaultAction event
+      return unless confirmCtrl.allowAction $attrs
       #
       remoteCtrl.submit $element, $attrs.remote
     #
