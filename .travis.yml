@@ -7,6 +7,7 @@ before_install:
 - cd misc/test-scenario
 - export BUNDLE_GEMFILE=$PWD/Gemfile
 - bundle install
+- RAILS_ENV=test bundle exec rake db:migrate
 - rvmsudo rails s -d -e test -p 80
 - sleep 3
 - cd ../..
