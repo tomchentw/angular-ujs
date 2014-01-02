@@ -29,14 +29,14 @@ Note for non-Rails backends: because submitting forms with HTTP methods other th
 ### "data-remote": Make links and forms submit asynchronously with Ajax
 
 ```html
-    <form data-remote="modelName" action="...">
-      <input type="text" name="name" ng-model="modelName.name">
-    </form>
+<form data-remote="modelName" action="...">
+  <input type="text" name="name" ng-model="modelName.name">
+</form>
 ```
 
 This attribute indicates that the link or form is to be submitted asynchronously; that is, without the page refreshing.
 
-For `angularjs` apps, only inputs with `ng-model` will be submitted with `data-remote`.
+For `angularjs` apps, only those items with `ng-model` will be submitted with `data-remote`.
 
 ## Unsupported Features
 
