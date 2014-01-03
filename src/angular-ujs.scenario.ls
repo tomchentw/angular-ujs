@@ -2,6 +2,13 @@
 const ptor = protractor.getInstance!
 ROOT_URL = void
 
+!function matchPath(path)
+  const promise = if typeof! path is 'String'
+    ROOT_URL.then (root) -> "#{ root }#{ path }"
+  else path or ROOT_URL
+
+  expect browser.driver.getCurrentUrl! .toBe promise 
+
 it 'should work' !(...) ->
   ptor.get '/'
   # ptor.wait 5000
@@ -27,7 +34,7 @@ describe 'confirm, remote, method directives normal functions' !(...) ->
     element(by.id 'sign_out').click!
     
     browser.driver.sleep 500
-    expect browser.driver.getCurrentUrl! .toBe ROOT_URL
+    matchPath!
 
   it 'should confirm and sign in' !(...) ->
     ptor.get '/users/sign_in'
@@ -46,7 +53,7 @@ describe 'confirm, remote, method directives normal functions' !(...) ->
     browser.driver.switchTo!alert!accept!
     
     browser.driver.sleep 500
-    expect browser.driver.getCurrentUrl! .toBe ROOT_URL
+    matchPath!
 
   it 'should work together' !(...) ->
     element(by.id 'work_together').click!
@@ -55,3 +62,17 @@ describe 'confirm, remote, method directives normal functions' !(...) ->
     browser.driver.sleep 500
     expect element(by.binding 'success').getText! .toBe 'Yo!'
     
+describe 'confirm directive' !(...) ->
+  it 'should greet and one dismiss it' !(...) ->
+    element(by.id 'hello_world').click!
+    browser.driver.switchTo!alert!dismiss!
+
+    browser.driver.sleep 500
+    matchPath!
+
+  it 'should greet and one accept it' !(...) ->
+    element(by.id 'hello_world').click!
+    browser.driver.switchTo!alert!accept!
+
+    browser.driver.sleep 500
+    matchPath 'users/sign_in'

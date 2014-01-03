@@ -50,8 +50,7 @@ angular.module 'angular.ujs' <[]>
     const confirmCtrl = $ctrls.0
     
     const onClickHandler = !(event) ->
-      confirmCtrl.denyDefaultAction event
-      return unless confirmCtrl.allowAction $attrs
+      confirmCtrl.denyDefaultAction event unless confirmCtrl.allowAction $attrs
 
     $element.on 'click' onClickHandler
     $scope.$on '$destroy' !-> $element.off 'click' onClickHandler

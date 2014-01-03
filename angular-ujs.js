@@ -52,9 +52,8 @@
       var confirmCtrl, onClickHandler;
       confirmCtrl = $ctrls[0];
       onClickHandler = function(event){
-        confirmCtrl.denyDefaultAction(event);
         if (!confirmCtrl.allowAction($attrs)) {
-          return;
+          confirmCtrl.denyDefaultAction(event);
         }
       };
       $element.on('click', onClickHandler);
