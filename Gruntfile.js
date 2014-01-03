@@ -68,7 +68,7 @@ module.exports = function(grunt) {
         files: [
           'misc/test-lib/jquery-1.10.2.min.js',
           'misc/test-lib/angular.1.2.6.min.js',
-          'misc/test-lib/angular-mocks.1.2.6.js',
+          'misc/test-lib/angular-mocks.1.2.6.min.js',
           '<%= fdr.tmp %><%= pkg.name %>.js.ls',
           '<%= fdr.tmp %><%= pkg.name %>.spec.ls'
         ],

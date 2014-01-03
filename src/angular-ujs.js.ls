@@ -1,3 +1,6 @@
+/*global angular:false*/
+'use strict'
+
 const denyDefaultAction = !(event) ->
   event.preventDefault!
   event.stopPropagation!
