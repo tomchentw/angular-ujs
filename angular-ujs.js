@@ -1,4 +1,6 @@
+/*global angular:false*/
 (function(){
+  'use strict';
   var denyDefaultAction;
   denyDefaultAction = function(event){
     event.preventDefault();
