@@ -1,6 +1,6 @@
 # angular-ujs ( [`Angular::Ujs`](https://rubygems.org/gems/angular-ujs) )
 
-[![Gem Version](https://badge.fury.io/rb/angular-ujs.png)](http://badge.fury.io/rb/angular-ujs) [![Build Status](https://secure.travis-ci.org/tomchentw/angular-ujs.png)](http://travis-ci.org/tomchentw/angular-ujs) 
+[![Gem Version](https://badge.fury.io/rb/angular-ujs.png)](http://badge.fury.io/rb/angular-ujs) [![Build Status](https://secure.travis-ci.org/tomchentw/angular-ujs.png)](http://travis-ci.org/tomchentw/angular-ujs) [![Code Climate](https://codeclimate.com/github/tomchentw/angular-ujs.png)](https://codeclimate.com/github/tomchentw/angular-ujs)
 
 Ruby on Rails unobtrusive scripting adapter for angularjs ( Without jQuery dependency )
 
