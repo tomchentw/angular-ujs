@@ -132,11 +132,6 @@ module.exports = function(grunt) {
         commitFiles: ['-a'],
         tagName: 'v%VERSION%', // consistent with ruby gems
         pushTo: 'origin'
-      },
-      'version-only': {
-        commit: false,
-        createTag: false,
-        push: false
       }
     },
     changelog: {
@@ -151,7 +146,7 @@ module.exports = function(grunt) {
   grunt.registerTask('continuous', ['livescript:watch', 'test-karma', 'test-protractor']);
   grunt.registerTask('default', ['build', 'continuous']);
   //
-  grunt.registerTask('release', ['bump-only:patch:version-only', 'changelog:release', 'default', 'bump-commit', 'shell:rubygem-release']);
+  grunt.registerTask('release', ['changelog:release', 'default', 'bump-commit', 'shell:rubygem-release']);
 
   // from: https://github.com/angular-ui/bootstrap/blob/master/Gruntfile.js
   grunt.registerTask('test-karma', 'Run tests on singleRun karma server', function () {
