@@ -88,3 +88,8 @@ gulp.task 'watch' ->
 gulp.task 'release' <[ before-release ]> ->
   return gulp.src 'package.json'
     .pipe gulp-exec('rake build release')
+/*
+ * Public tasks end 
+ *
+ * 
+ */
