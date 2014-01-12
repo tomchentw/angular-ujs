@@ -1,6 +1,6 @@
-# angular-ujs ( [`Angular::Ujs`](https://rubygems.org/gems/angular-ujs) )
+# angular-ujs
 
-[![Gem Version](https://badge.fury.io/rb/angular-ujs.png)](http://badge.fury.io/rb/angular-ujs) [![Build Status](https://secure.travis-ci.org/tomchentw/angular-ujs.png)](http://travis-ci.org/tomchentw/angular-ujs) [![Code Climate](https://codeclimate.com/github/tomchentw/angular-ujs.png)](https://codeclimate.com/github/tomchentw/angular-ujs)
+[![Gem Version](https://badge.fury.io/rb/angular-ujs.png)](http://badge.fury.io/rb/angular-ujs) [![Build Status](https://secure.travis-ci.org/tomchentw/angular-ujs.png)](http://travis-ci.org/tomchentw/angular-ujs) [![Code Climate](https://codeclimate.com/github/tomchentw/angular-ujs.png)](https://codeclimate.com/github/tomchentw/angular-ujs)  [![Dependency Status](https://gemnasium.com/tomchentw/angular-ujs.png)](https://gemnasium.com/tomchentw/angular-ujs)
 
 Ruby on Rails unobtrusive scripting adapter for angularjs ( Without jQuery dependency )
 
@@ -14,7 +14,7 @@ We use the similarity between them and provides seamless intergration with `jque
 [LiveScript](http://livescript.net/) is a compile-to-js language, which provides us more robust way to write JavaScript.  
 It also has great readibility and lots of syntax sugar just like you're writting python/ruby.
 
-### Spec/Scenario coverage
+### Spec / Scenario coverage
 We use `krama` to run unit test against [angular-ujs.spec.ls](https://github.com/tomchentw/angular-ujs/blob/master/src/angular-ujs.spec.ls) and use `protractor` to run intergration test via [angular-ujs.scenario.ls](https://github.com/tomchentw/angular-ujs/blob/master/src/angular-ujs.scenario.ls).
 
 ## Installation
@@ -24,7 +24,7 @@ However, we recommend you add [`ng-rails-csrf`](https://github.com/xrd/ng-rails-
 
 ### Just use it
 
-* (Optional) Download and include [`ng-rails-csrf.js`](https://github.com/xrd/ng-rails-csrf/blob/master/vendor/assets/javascripts/ng-rails-csrf.js).
+* (_Optional_) Download and include [`ng-rails-csrf.js`](https://github.com/xrd/ng-rails-csrf/blob/master/vendor/assets/javascripts/ng-rails-csrf.js).
 * Download and include [`angular-ujs.js`](https://github.com/tomchentw/angular-ujs/blob/master/angular-ujs.js) OR [`angular-ujs.min.js`](https://github.com/tomchentw/angular-ujs/blob/master/angular-ujs.min.js).  
 
 Then include them through script tag in your HTML.
