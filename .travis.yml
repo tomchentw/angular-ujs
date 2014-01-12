@@ -7,15 +7,11 @@ before_install:
 - cd misc/test-scenario
 - export BUNDLE_GEMFILE=$PWD/Gemfile
 - bundle install
-- RAILS_ENV=test bundle exec rake db:migrate
-- rvmsudo rails s -d -e test -p 80
-- sleep 3
 - cd ../..
 - export BUNDLE_GEMFILE=$PWD/Gemfile
 before_script:
-- npm install --quiet -g grunt-cli karma
+- npm install --quiet -g gulp karma protractor
 - npm install --quiet
-script: grunt
 after_script:
 - sudo kill `cat misc/test-scenario/tmp/pids/server.pid`
 addons:
