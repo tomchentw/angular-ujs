@@ -39,12 +39,22 @@ gulp.task 'karma' <[ build ]> ->
     .pipe gulp-exec('karma start misc/karma.conf.js')
 
 gulp.task 'protractor' <[ build ]> ->
-  return gulp.src 'src/angular-ujs.scenario.ls'
+  stream = gulp.src 'src/angular-ujs.scenario.ls'
     .pipe gulp-livescript!
     .pipe gulp.dest 'tmp/'
-    .pipe gulp-exec('cd misc/test-scenario && bundle && (RAILS_ENV=test rake db:drop db:migrate) && rails s -d -e test -p 2999 && cd ../..')   
-    .pipe gulp-exec('protractor misc/protractor.conf.js')
-    .pipe gulp-exec('kill $(lsof -i :2999 -t)')
+  
+  stream = stream.pipe gulp-exec [
+    'cd misc/test-scenario'
+    'bundle install'
+    'RAILS_ENV=test rake db:drop db:migrate'
+    'rails s -d -e test -p 2999'
+    'cd ../..'
+  ].join ' && ' unless process.env.TRAVIS
+  
+  stream = stream.pipe gulp-exec('protractor misc/protractor.conf.js')
+  stream = stream.pipe gulp-exec('kill $(lsof -i :2999 -t)') unless process.env.TRAVIS
+  
+  return stream
 
 gulp.task 'bump' ->
   return gulp.src 'package.json'

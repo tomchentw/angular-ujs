@@ -7,13 +7,16 @@ before_install:
 - cd misc/test-scenario
 - export BUNDLE_GEMFILE=$PWD/Gemfile
 - bundle install
+- RAILS_ENV=test bundle exec rake db:drop db:migrate
+- rails s -d -e test -p 2999
 - cd ../..
 - export BUNDLE_GEMFILE=$PWD/Gemfile
 before_script:
 - npm install --quiet -g gulp karma protractor
 - npm install --quiet
+script: npm test
 after_script:
-- sudo kill `cat misc/test-scenario/tmp/pids/server.pid`
+- kill $(lsof -i :2999 -t)
 addons:
   sauce_connect: true
 env:
