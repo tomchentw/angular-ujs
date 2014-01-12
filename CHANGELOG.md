@@ -1,3 +1,12 @@
+<a name="0.4.4"></a>
+### 0.4.4 (2014-01-13)
+
+
+#### Bug Fixes
+
+* **travis:** start rails server in before_script ([c7c178336375419339867fe9cd01ac43e4700d3a](git://github.com/tomchentw/angular-ujs.git/commit/c7c178336375419339867fe9cd01ac43e4700d3a))
+
+
 <a name="v0.4.3"></a>
 ### v0.4.3 (2014-01-04)
 

@@ -1,3 +1,8 @@
+/*! angular-ujs - v 0.4.4 - 2014-01-12T17:40:17.125Z
+ * https://github.com/tomchentw/angular-ujs
+ * Copyright (c) 2014 [tomchentw](https://github.com/tomchentw/);
+ * Licensed [MIT](http://tomchentw.mit-license.org/)
+ */
 /*global angular:false*/
 (function(){
   'use strict';
