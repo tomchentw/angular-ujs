@@ -101,7 +101,7 @@ For `angularjs` apps, **ONLY** those items with `ng-model` will be submitted wit
 
 [![devDependency Status](https://david-dm.org/tomchentw/angular-ujs/dev-status.png?branch=master)](https://david-dm.org/tomchentw/angular-ujs#info=devDependencies)
 
-1. Fork it ( http://github.com/<my-github-username>/angular-ujs/fork )
+1. Fork it ( http://github.com/tomchentw/angular-ujs/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
