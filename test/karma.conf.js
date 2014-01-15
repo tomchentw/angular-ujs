@@ -10,10 +10,10 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'misc/test-lib/jquery-1.10.2.min.js',
-      'misc/test-lib/angular.1.2.6.min.js',
-      'misc/test-lib/angular-mocks.1.2.6.min.js',
-      'angular-ujs.js',
+      'bower_components/jquery/jquery.js',
+      'bower_components/angular/angular.js',
+      'bower_components/angular-mocks/angular-mocks.js',
+      'tmp/angular-ujs.js',
       'tmp/angular-ujs.spec.js'
     ],
 

@@ -1,7 +1,7 @@
-(...) <-! describe 'angular-ujs'
+(...) <-! describe 'angular.ujs'
 const ptor      = protractor.getInstance!
 const EMAIL     = 'developer@tomchentw.com'
-const PASSWORD  = 'angular-ujs'
+const PASSWORD  = 'angular.ujs'
 ROOT_URL        = void
 
 !function matchPath(path)

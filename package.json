@@ -1,8 +1,8 @@
 {
   "name": "angular-ujs",
   "version": "0.4.4",
-  "description": "Unobtrusive scripting adapter for angularjs",
-  "summary": "Ruby on Rails unobtrusive scripting adapter for angularjs ( Without jQuery dependency )",
+  "description": "Unobtrusive scripting for AngularJS ( without jQuery dependency )",
+  "longDescription": "Ruby on Rails replacement for unobtrusive scripting library `jquery_ujs` implemented in AngularJS without jQuery dependency",
   "main": "angular-ujs.js",
   "scripts": {
     "test": "gulp test --require LiveScript",
@@ -19,7 +19,8 @@
     "RoR",
     "AngularJS",
     "jQuery",
-    "Unobtrusive scripting"
+    "Unobtrusive scripting",
+    "directive"
   ],
   "author": {
     "name": "tomchentw",
@@ -35,21 +36,21 @@
   },
   "homepage": "https://github.com/tomchentw/angular-ujs",
   "devDependencies": {
+    "LiveScript": "~1.2.0",
+    "event-stream": "~3.1.0",
+    "gulp": "~3.3.4",
+    "gulp-livescript": "0.0.12",
+    "gulp-header": "~1.0.2",
+    "gulp-uglify": "~0.1.0",
+    "gulp-rename": "~0.2.2",
+    "gulp-bump": "~0.1.0",
+    "gulp-exec": "~1.0.3",
+    "gulp-conventional-changelog": "0.0.8",
     "karma-script-launcher": "~0.1.0",
-    "karma-phantomjs-launcher": "~0.1.1",
     "karma-chrome-launcher": "~0.1.2",
     "karma-firefox-launcher": "~0.1.3",
     "karma-jasmine": "~0.1.5",
-    "karma": "~0.10.8",
-    "LiveScript": "~1.2.0",
-    "event-stream": "~3.1.0",
-    "gulp": "~3.3.1",
-    "gulp-livescript": "0.0.12",
-    "gulp-header": "~0.4.0",
-    "gulp-uglify": "~0.1.0",
-    "gulp-rename": "~0.2.1",
-    "gulp-bump": "~0.1.0",
-    "gulp-exec": "~1.0.3",
-    "gulp-conventional-changelog": "0.0.8"
+    "karma-phantomjs-launcher": "~0.1.1",
+    "karma": "~0.10.9"
   }
 }

@@ -1,7 +1,6 @@
 (...) <-! describe 'module angular.ujs'
 $compile = $rootScope = $document = $httpBackend = $sniffer = void
 
-# beforeEach module 'angular.ujs'
 beforeEach module 'angular.ujs'
 beforeEach inject !(_$compile_, _$rootScope_, _$document_, _$httpBackend_, _$sniffer_) ->
   $compile      := _$compile_
@@ -29,38 +28,6 @@ describe '$getRailsCSRF conditional inject' !(...) ->
 
     expect metaTags['csrf-param'] .toBe 'authenticity_token'
     expect metaTags['csrf-token'] .toBe 'qwertyuiopasdfghjklzxcvbnm='
-
-
-  # describe 'noopRemoteFormCtrl' !(...) ->
-    
-  #   it 'should be defined' !(...) ->
-  #     expect railsService.noopRemoteFormCtrl .toBeDefined!
-
-  #   it 'should be created with new' !(...) ->
-  #     expect new railsService.noopRemoteFormCtrl .toBeDefined!
-
-  #   it 'should return controller like RailsRemoteFormCtrl' !(...) ->
-  #     const noopCtrl = new railsService.noopRemoteFormCtrl
-  #     const $form = [{submit: !->}]
-      
-  #     expect noopCtrl.submit($form) .toBeDefined!
-  #     const promise = noopCtrl.submit($form)
-  #     expect promise.then .toBeDefined!
-
-  # describe 'noopConfirmCtrl' !(...) ->
-    
-  #   it 'should be defined' !(...) ->
-  #     expect railsService.noopConfirmCtrl .toBeDefined!
-
-  #   it 'should be created with new' !(...) ->
-  #     expect new railsService.noopConfirmCtrl .toBeDefined!
-
-  #   it 'should return controller like RailsConfirmCtrl' !(...) ->
-  #     const noopCtrl = new railsService.noopConfirmCtrl
-      
-  #     expect noopCtrl.allowAction .toBeDefined!
-  #     expect noopCtrl.denyDefaultAction .toBeDefined!
-  #     expect noopCtrl.allowAction! .toBeTruthy!
 
 describe 'noopRailsConfirmCtrl' !(...) ->
   noopCtrl = $scope = void
@@ -236,22 +203,6 @@ describe 'remote directive' !(...) ->
   afterEach !(...) ->
     $scope.$destroy!
 
-  # it "shouldn't activate without 'data-' prefix" !(...) ->    
-  #   const $element = $compile('''
-  #     <form method="POST" action="/users" remote="user">
-  #       <input type='submit'>
-  #     </form>
-  #   ''')($scope)
-  #   $document.find 'body' .append $element
-    
-  #   $element.on 'submit' !(event) ->
-  #     expect event.defaultPrevented .toBeFalsy!
-  #     event.preventDefault!
-  #     event.stopPropagation!
-  #     $element.remove!
-
-  #   $element.find 'input' .eq 1 .click!
-
   it 'should submit using $http for form element' !(...) ->
     const EXPECTED_NAME = 'angular-ujs'
     const confirmSpy = spyOn window, 'confirm'
@@ -328,36 +279,6 @@ describe 'remote directive' !(...) ->
 
     $httpBackend.flush!
     $element.remove!
-
-
-# describe 'method directive' !(...) ->
-#   $scope = void
-
-#   beforeEach !(...) ->
-#     $scope       := $rootScope.$new!
-
-#   afterEach !(...) ->
-#     $scope.$destroy!
-
-#   it "shouldn't activate without 'data-' prefix" !(...) ->
-#     clicked = false
-#     runs !->
-#       const $element = $compile('''
-#         <a href="/users/sign_out" method="DELETE">SignOut</a>
-#       ''')($scope)
-#       $document.find 'body' .append $element
-      
-#       $element.on 'click' !(event) ->
-#         event.preventDefault!
-#         event.stopPropagation!
-#         $element.remove!
-#         clicked := true
-
-#       $element.click!
-
-#     waitsFor ->
-#       clicked
-#     , 'anchor should be clicked', 500
 
 describe 'method directive with remote directive' !(...) ->
   $scope = void

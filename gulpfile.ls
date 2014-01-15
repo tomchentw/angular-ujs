@@ -16,11 +16,12 @@ const getJsonFile = ->
 
 const getHeaderStream = ->
   const jsonFile = getJsonFile!
+  const date = new Date
 
   gulp-header """
-/*! angular-ujs - v #{ jsonFile.version } - {{ now }}
+/*! angular-ujs - v #{ jsonFile.version } - #{ date }
  * #{ jsonFile.homepage }
- * Copyright (c) {{ year }} [#{ jsonFile.author.name }](#{ jsonFile.author.url });
+ * Copyright (c) #{ date.getFullYear! } [#{ jsonFile.author.name }](#{ jsonFile.author.url });
  * Licensed [#{ jsonFile.license.type }](#{ jsonFile.license.url })
  */
 """
@@ -32,11 +33,17 @@ const getBuildStream = ->
     .pipe gulp.dest '.'
     .pipe gulp.dest 'vendor/assets/javascripts/'
 
-gulp.task 'karma' <[ build ]> ->
+gulp.task 'bare-build' ->
+  return gulp.src 'src/angular-ujs.ls'
+    .pipe gulp-livescript bare: true
+    .pipe gulp.dest 'tmp/'
+    .pipe gulp-exec('bower install')
+
+gulp.task 'karma' <[ bare-build ]> ->
   return gulp.src 'src/angular-ujs.spec.ls'
     .pipe gulp-livescript!
     .pipe gulp.dest 'tmp/'
-    .pipe gulp-exec('karma start misc/karma.conf.js')
+    .pipe gulp-exec('karma start test/karma.conf.js')
 
 gulp.task 'protractor' <[ build ]> ->
   stream = gulp.src 'src/angular-ujs.scenario.ls'
@@ -44,20 +51,20 @@ gulp.task 'protractor' <[ build ]> ->
     .pipe gulp.dest 'tmp/'
   
   stream = stream.pipe gulp-exec [
-    'cd misc/test-scenario'
+    'cd test/scenario-rails'
     'bundle install'
     'RAILS_ENV=test rake db:drop db:migrate'
     'rails s -d -e test -p 2999'
     'cd ../..'
   ].join ' && ' unless process.env.TRAVIS
   
-  stream = stream.pipe gulp-exec('protractor misc/protractor.conf.js')
+  stream = stream.pipe gulp-exec('protractor test/protractor.conf.js')
   stream = stream.pipe gulp-exec('kill $(lsof -i :2999 -t)') unless process.env.TRAVIS
   
   return stream
 
 gulp.task 'bump' ->
-  return gulp.src 'package.json'
+  return gulp.src <[ package.json bower.json ]>
     .pipe gulp-bump type: 'patch'
     .pipe gulp.dest '.'
 
@@ -80,6 +87,14 @@ gulp.task 'before-release' <[ uglify ]> ->
     .pipe gulp-exec("git tag -a v#{ jsonFile.version } -m '#{ commitMsg }'")
     .pipe gulp-exec('git push')
 
+gulp.task 'release-gem' <[ before-release ]> ->
+  return gulp.src 'package.json'
+    .pipe gulp-exec('rake build release')
+
+gulp.task 'release-npm' <[ before-release ]> ->
+  return gulp.src 'package.json'
+    .pipe gulp-exec('npm publish')
+
 /*
  * Public tasks: 
  *
@@ -95,9 +110,7 @@ gulp.task 'watch' ->
   gulp.watch 'src/*.ls' !->
     gulp.run 'test' # optimize ...
 
-gulp.task 'release' <[ before-release ]> ->
-  return gulp.src 'package.json'
-    .pipe gulp-exec('rake build release')
+gulp.task 'release' <[ release-gem  release-npm ]>
 /*
  * Public tasks end 
  *
