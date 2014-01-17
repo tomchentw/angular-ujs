@@ -1,3 +1,13 @@
+<a name="0.4.6"></a>
+### 0.4.6 (2014-01-17)
+
+
+#### Bug Fixes
+
+* **gulpfile:** add release-git task with `git push`, `--tags` ([3d965954f04da8826d90dc86755d96c6247412fa](git://github.com/tomchentw/angular-ujs.git/commit/3d965954f04da8826d90dc86755d96c6247412fa))
+* **travis:** start rails server in before_script ([c7c178336375419339867fe9cd01ac43e4700d3a](git://github.com/tomchentw/angular-ujs.git/commit/c7c178336375419339867fe9cd01ac43e4700d3a))
+
+
 <a name="0.4.5"></a>
 ### 0.4.5 (2014-01-16)
 

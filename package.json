@@ -1,6 +1,6 @@
 {
   "name": "angular-ujs",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "Unobtrusive scripting for AngularJS ( without jQuery dependency )",
   "longDescription": "Ruby on Rails replacement for unobtrusive scripting library `jquery_ujs` implemented in AngularJS without jQuery dependency",
   "main": "angular-ujs.js",
