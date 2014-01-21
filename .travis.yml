@@ -24,3 +24,4 @@ env:
   - rvmsudo_secure_path: 1
   - secure: kou5wVnENwnwQFaiepw86q5x3wur2Dxi52+CsipWfzTFiq7FzYFm/xExLCL8GDHVpfza/OtCX3bL1JSkFmFLJ9hRGjGBCh81OAsTsns2LxgyZ1832hvck8P4ikcpjkhaQm5nQFNKlPqafaKT0Hti4/UZhA/3BeQAeR2lOmf9meI=
   - secure: BK7W2x/qbqeFXodw+T5twbmq5V3RJbcF1ACn/T8jm0ElGFkkWy+ugdekMhiWXl+CB857l9kfOiG/1JDF/0vJMxlAObhJjgspdZIQACRqLMhhKmIhKUHLBxOI974QDjxifU8YPZe9Lla0IErWs8yLBt9E1q3c8Nq0hrf9Hp85A24=
+  - secure: C7cMMso7cStBd8CN+Dy4+RWHW7Xwf7jVLUDzINqOJf7ssp3GrrLHsnFALm0hTrkpIX6Z29+j7YR5tVlCKCVEgjGAoeCaiQ0kIjYGp1viD9JBgGwoNbXWhBUuLWm4IyQ52b+3W3U2Xeu6Eocsu+Ua6tkLTjpLIwPSI8J/MOpYiPw=

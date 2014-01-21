@@ -1,6 +1,6 @@
 # angular-ujs
 
-[![Gem Version](https://badge.fury.io/rb/angular-ujs.png)](http://badge.fury.io/rb/angular-ujs) [![NPM version](https://badge.fury.io/js/angular-ujs.png)](http://badge.fury.io/js/angular-ujs) [![Build Status](https://secure.travis-ci.org/tomchentw/angular-ujs.png)](http://travis-ci.org/tomchentw/angular-ujs) [![Code Climate](https://codeclimate.com/github/tomchentw/angular-ujs.png)](https://codeclimate.com/github/tomchentw/angular-ujs)  [![Dependency Status](https://gemnasium.com/tomchentw/angular-ujs.png)](https://gemnasium.com/tomchentw/angular-ujs)
+[![Gem Version](https://badge.fury.io/rb/angular-ujs.png)](http://badge.fury.io/rb/angular-ujs) [![NPM version](https://badge.fury.io/js/angular-ujs.png)](http://badge.fury.io/js/angular-ujs) [![Build Status](https://secure.travis-ci.org/tomchentw/angular-ujs.png)](http://travis-ci.org/tomchentw/angular-ujs) [![Coverage Status](https://coveralls.io/repos/tomchentw/angular-ujs/badge.png?branch=master)](https://coveralls.io/r/tomchentw/angular-ujs?branch=master) [![Code Climate](https://codeclimate.com/github/tomchentw/angular-ujs.png)](https://codeclimate.com/github/tomchentw/angular-ujs)  [![Dependency Status](https://gemnasium.com/tomchentw/angular-ujs.png)](https://gemnasium.com/tomchentw/angular-ujs)
 
 
 ## Project philosophy
