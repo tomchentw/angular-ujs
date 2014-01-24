@@ -31,14 +31,10 @@ describe '$getRailsCSRF conditional inject' !(...) ->
     expect metaTags['csrf-token'] .toBe 'qwertyuiopasdfghjklzxcvbnm='
 
 describe 'noopRailsConfirmCtrl' !(...) ->
-  noopCtrl = $scope = void
+  noopCtrl = void
 
   beforeEach inject !($controller) ->
-    $scope    := $rootScope.$new!
-    noopCtrl  := $controller 'noopRailsConfirmCtrl' {$scope}
-
-  afterEach !(...) ->
-    $scope.$destroy!
+    noopCtrl := $controller 'noopRailsConfirmCtrl' $scope: $rootScope
 
   it 'should be like RailsConfirmCtrl' !(...) ->    
     expect noopCtrl.allowAction .toBeDefined!
@@ -53,15 +49,11 @@ describe 'noopRailsConfirmCtrl' !(...) ->
     expect event.isPropagationStopped! .toBeTruthy!
 
 describe 'RailsConfirmCtrl' !(...) ->
-  railsConfirmCtrl = confirmSpy = $scope = void
+  railsConfirmCtrl = confirmSpy = void
 
   beforeEach inject !($controller) ->
-    $scope            := $rootScope.$new!
-    railsConfirmCtrl  := $controller 'RailsConfirmCtrl' {$scope}
+    railsConfirmCtrl  := $controller 'RailsConfirmCtrl' $scope: $rootScope
     confirmSpy        := spyOn window, 'confirm'
-
-  afterEach !(...) ->
-    $scope.$destroy!
 
   it 'should have a denyDefaultAction method' !(...) ->
     expect railsConfirmCtrl.denyDefaultAction .toBeDefined!
@@ -93,27 +85,19 @@ describe 'RailsConfirmCtrl' !(...) ->
     expect confirmSpy .toHaveBeenCalled!
 
 describe 'noopRailsRemoteFormCtrl' !(...) ->
-  noopCtrl = $scope = void
+  noopCtrl = void
 
   beforeEach inject !($controller) ->
-    $scope   := $rootScope.$new!
-    noopCtrl := $controller 'noopRailsRemoteFormCtrl' {$scope}
-
-  afterEach !(...) ->
-    $scope.$destroy!
+    noopCtrl := $controller 'noopRailsRemoteFormCtrl' $scope: $rootScope
 
   it 'should have a submit method' !(...) ->
     expect noopCtrl.submit .toBeDefined!
 
 describe 'RailsRemoteFormCtrl' !(...) ->
-  railsRemoteFormCtrl = $scope = void
+  railsRemoteFormCtrl = void
 
   beforeEach inject !($controller) ->
-    $scope              := $rootScope.$new!
-    railsRemoteFormCtrl := $controller 'RailsRemoteFormCtrl' {$scope}
-
-  afterEach !(...) ->
-    $scope.$destroy!
+    railsRemoteFormCtrl := $controller 'RailsRemoteFormCtrl' $scope: $rootScope
 
   it 'should have a submit method' !(...) ->
     expect railsRemoteFormCtrl.submit .toBeDefined!
@@ -129,11 +113,11 @@ describe 'RailsRemoteFormCtrl' !(...) ->
       <form method="POST" action="/users">
         <input ng-model="name" type="text">
       </form>
-    ''')($scope)
+    ''')($rootScope)
     $document.find 'body' .append $element
 
     $element.find 'input' .eq 0 .val EXPECTED_NAME .change!
-    $scope.$digest!
+    $rootScope.$digest!
 
     railsRemoteFormCtrl.submit $element, true
     $httpBackend.flush!
@@ -150,7 +134,7 @@ describe 'RailsRemoteFormCtrl' !(...) ->
     const EXPECTED_DESC = 'angular-ujs is ready to work with your awesome project!!'
     const COLORS = <[red green blue]>
 
-    $scope.colors = COLORS
+    $rootScope.colors = COLORS
 
     $httpBackend.expectPOST '/users' do
       user:
@@ -177,7 +161,7 @@ describe 'RailsRemoteFormCtrl' !(...) ->
         <select ng-model="user.color" ng-options="color for color in colors"></select>
         <textarea ng-model="user.desc"></textarea>
       </form>
-    ''')($scope)
+    ''')($rootScope)
     $document.find 'body' .append $element
 
     const inputs = $element.find 'input'
@@ -189,26 +173,22 @@ describe 'RailsRemoteFormCtrl' !(...) ->
     
     $element.find 'select' .val COLORS.indexOf(EXPECTED_COLOR) .change!
     $element.find 'textarea' .val EXPECTED_DESC .change!
-    $scope.$digest!
+    $rootScope.$digest!
 
     railsRemoteFormCtrl.submit $element, 'user'
     $httpBackend.flush!
     $element.remove!
 
 describe 'confirm directive' !(...) ->
-  $scope = confirmSpy = void
+  confirmSpy = void
   
   beforeEach !(...) ->
-    $scope      := $rootScope.$new!
-    confirmSpy  := spyOn window, 'confirm'
-
-  afterEach !(...) ->
-    $scope.$destroy!
+    confirmSpy := spyOn window, 'confirm'
 
   it 'should show confirm dialog' !(...) ->
     const $element = $compile('''
       <button data-confirm="confirm..."></button>
-    ''')($scope)
+    ''')($rootScope)
 
     $document.find 'body' .append $element
     $element.click!
@@ -220,7 +200,7 @@ describe 'confirm directive' !(...) ->
 
     const $element = $compile('''
       <button data-confirm="confirm..."></button>
-    ''')($scope)
+    ''')($rootScope)
 
     $document.find 'body' .append $element
     $element.click!
@@ -228,14 +208,6 @@ describe 'confirm directive' !(...) ->
     expect confirmSpy .toHaveBeenCalled!
 
 describe 'remote directive' !(...) ->
-  $scope = void
-
-  beforeEach !(...) ->
-    $scope       := $rootScope.$new!
-
-  afterEach !(...) ->
-    $scope.$destroy!
-
   it 'should submit using $http for form element' !(...) ->
     const EXPECTED_NAME = 'angular-ujs'
     const confirmSpy = spyOn window, 'confirm'
@@ -250,16 +222,16 @@ describe 'remote directive' !(...) ->
         <input ng-model="user.name" type="text">
         <input type='submit'>
       </form>
-    ''')($scope)
+    ''')($rootScope)
     $document.find 'body' .append $element
 
     $element.find 'input' .eq 0 .val EXPECTED_NAME .change!
-    $scope.$digest!
+    $rootScope.$digest!
     
     $element.find 'input' .eq 1 .click!
     $httpBackend.flush!
+    
     expect confirmSpy .not.toHaveBeenCalled!
-    $element.remove!
 
   it 'should submit with named data-remote' !(...) ->
     const EXPECTED_NAME = 'angular-ujs'
@@ -275,16 +247,17 @@ describe 'remote directive' !(...) ->
         <input ng-model="user.name" type="text">
         <input type='submit'>
       </form>
-    ''')($scope)
+    ''')($rootScope)
     $document.find 'body' .append $element
 
     $element.find 'input' .eq 0 .val EXPECTED_NAME .change!
-    $scope.$digest!
+    $rootScope.$digest!
     
     $element.find 'input' .eq 1 .click!
     $httpBackend.flush!
+
+
     expect confirmSpy .not.toHaveBeenCalled!
-    $element.remove!
 
   it 'should work with confirm directive' !(...) ->
     const EXPECTED_NAME = 'angular-ujs'
@@ -300,28 +273,19 @@ describe 'remote directive' !(...) ->
         <input ng-model="user.name" type="text">
         <input type='submit'>
       </form>
-    ''')($scope)
+    ''')($rootScope)
     $document.find 'body' .append $element
 
     $element.find 'input' .eq 0 .val EXPECTED_NAME .change!
-    $scope.$digest!
+    $rootScope.$digest!
     
     $element.find 'input' .eq 1 .click!
 
     expect confirmSpy .toHaveBeenCalled!
 
     $httpBackend.flush!
-    $element.remove!
 
 describe 'method directive with remote directive' !(...) ->
-  $scope = void
-
-  beforeEach inject !($controller) ->
-    $scope       := $rootScope.$new!
-
-  afterEach !(...) ->
-    $scope.$destroy!
-
   it 'should submit and emit success with remote form' !(...) ->
     response = false
     $httpBackend.expectPOST '/users/sign_out' do
@@ -330,10 +294,10 @@ describe 'method directive with remote directive' !(...) ->
 
     const $element = $compile('''
       <a href="/users/sign_out" data-method="DELETE" data-remote="true">SignOut</a>
-    ''')($scope)
+    ''')($rootScope)
     $document.find 'body' .append $element
 
-    $scope.$on 'rails:remote:success' !->
+    $rootScope.$on 'rails:remote:success' !->
       response := true
 
     $element.click!
@@ -350,10 +314,10 @@ describe 'method directive with remote directive' !(...) ->
 
     const $element = $compile('''
       <a href="/users/sign_out" data-method="PUT" data-remote="true">SignOut</a>
-    ''')($scope)
+    ''')($rootScope)
     $document.find 'body' .append $element
 
-    $scope.$on 'rails:remote:error' !->
+    $rootScope.$on 'rails:remote:error' !->
       error := true
 
     $element.click!
@@ -371,10 +335,10 @@ describe 'method directive with remote directive' !(...) ->
 
     const $element = $compile('''
       <a href="/users/sign_out" data-method="DELETE" data-remote="true" data-confirm="Are u sure?">SignOut</a>
-    ''')($scope)
+    ''')($rootScope)
     $document.find 'body' .append $element
 
-    $scope.$on 'rails:remote:success' !->
+    $rootScope.$on 'rails:remote:success' !->
       response := true
 
     $element.click!
