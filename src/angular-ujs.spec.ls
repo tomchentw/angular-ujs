@@ -12,6 +12,7 @@ beforeEach inject !(_$compile_, _$rootScope_, _$document_, _$httpBackend_, _$sni
 afterEach !(...) ->
   $httpBackend.verifyNoOutstandingExpectation!
   $httpBackend.verifyNoOutstandingRequest!
+  $rootScope.$destroy!
 
 it 'should start test' !(...) ->
   expect true .toBeTruthy!
@@ -194,6 +195,38 @@ describe 'RailsRemoteFormCtrl' !(...) ->
     $httpBackend.flush!
     $element.remove!
 
+describe 'confirm directive' !(...) ->
+  $scope = confirmSpy = void
+  
+  beforeEach !(...) ->
+    $scope      := $rootScope.$new!
+    confirmSpy  := spyOn window, 'confirm'
+
+  afterEach !(...) ->
+    $scope.$destroy!
+
+  it 'should show confirm dialog' !(...) ->
+    const $element = $compile('''
+      <button data-confirm="confirm..."></button>
+    ''')($scope)
+
+    $document.find 'body' .append $element
+    $element.click!
+
+    expect confirmSpy .toHaveBeenCalled!
+
+  it 'should allow confirm' !(...) ->
+    confirmSpy.andReturn true
+
+    const $element = $compile('''
+      <button data-confirm="confirm..."></button>
+    ''')($scope)
+
+    $document.find 'body' .append $element
+    $element.click!
+
+    expect confirmSpy .toHaveBeenCalled!
+
 describe 'remote directive' !(...) ->
   $scope = void
 
@@ -289,51 +322,66 @@ describe 'method directive with remote directive' !(...) ->
   afterEach !(...) ->
     $scope.$destroy!
 
-  it "should submit with remote form" !(...) ->
+  it 'should submit and emit success with remote form' !(...) ->
     response = false
-    runs !->
-      $httpBackend.expectPOST '/users/sign_out' do
-        _method: 'DELETE'
-      .respond 201
+    $httpBackend.expectPOST '/users/sign_out' do
+      _method: 'DELETE'
+    .respond 201
 
-      const $element = $compile('''
-        <a href="/users/sign_out" data-method="DELETE" data-remote="true">SignOut</a>
-      ''')($scope)
-      $document.find 'body' .append $element
+    const $element = $compile('''
+      <a href="/users/sign_out" data-method="DELETE" data-remote="true">SignOut</a>
+    ''')($scope)
+    $document.find 'body' .append $element
 
-      $scope.$on 'rails:remote:success' !->
-        response := true
+    $scope.$on 'rails:remote:success' !->
+      response := true
 
-      $element.click!
-      $httpBackend.flush!
+    $element.click!
+    $httpBackend.flush!
+    $rootScope.$digest!
+    
+    expect response .toBeTruthy!
+    
+  it 'should submit and emit error with remote form' !(...) ->
+    error = false
+    $httpBackend.expectPOST '/users/sign_out' do
+      _method: 'PUT'
+    .respond 404
 
-    waitsFor ->
-      response
-    , 'response should be returned', 500
+    const $element = $compile('''
+      <a href="/users/sign_out" data-method="PUT" data-remote="true">SignOut</a>
+    ''')($scope)
+    $document.find 'body' .append $element
+
+    $scope.$on 'rails:remote:error' !->
+      error := true
+
+    $element.click!
+    $httpBackend.flush!
+    $rootScope.$digest!
+    
+    expect error .toBeTruthy!
 
   it 'should work with confirm and remote form' !(...) ->
     response = false
+    spyOn window, 'confirm' .andReturn true
+    $httpBackend.expectPOST '/users/sign_out' do
+      _method: 'DELETE'
+    .respond 201
 
-    runs !->
-      spyOn window, 'confirm' .andReturn true
-      $httpBackend.expectPOST '/users/sign_out' do
-        _method: 'DELETE'
-      .respond 201
+    const $element = $compile('''
+      <a href="/users/sign_out" data-method="DELETE" data-remote="true" data-confirm="Are u sure?">SignOut</a>
+    ''')($scope)
+    $document.find 'body' .append $element
 
-      const $element = $compile('''
-        <a href="/users/sign_out" data-method="DELETE" data-remote="true" data-confirm="Are u sure?">SignOut</a>
-      ''')($scope)
-      $document.find 'body' .append $element
+    $scope.$on 'rails:remote:success' !->
+      response := true
 
-      $scope.$on 'rails:remote:success' !->
-        response := true
+    $element.click!
+    $httpBackend.flush!
+    $rootScope.$digest!
 
-      $element.click!
-      $httpBackend.flush!
-
-    waitsFor ->
-      response
-    , 'response should be returned', 500
+    expect response .toBeTruthy!
 
 
 
