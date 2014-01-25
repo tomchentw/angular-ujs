@@ -5,7 +5,8 @@ const denyDefaultAction = !(event) ->
   event.preventDefault!
   event.stopPropagation!
 
-angular.module 'angular.ujs' <[]>
+angular.module 'angular.ujs' <[
+]>
 .config <[
         $provide  $injector
 ]> ++ !($provide, $injector) ->
@@ -28,12 +29,6 @@ angular.module 'angular.ujs' <[]>
 
   @denyDefaultAction = denyDefaultAction
 
-.controller 'noopRailsRemoteFormCtrl' !->
-  @submit = ($form) ->
-    $form.0.submit!
-    #
-    then: angular.noop
-
 .controller 'RailsConfirmCtrl' <[
         $window
 ]> ++ !($window) ->
@@ -44,28 +39,11 @@ angular.module 'angular.ujs' <[]>
 
   @denyDefaultAction = denyDefaultAction
 
-.directive 'confirm' ->
-
-  const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
-    const confirmCtrl = $ctrls.0
-    
-    const onClickHandler = !(event) ->
-      confirmCtrl.denyDefaultAction event unless confirmCtrl.allowAction $attrs
-
-    $element.on 'click' onClickHandler
-    $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
-
-
-  restrict: 'A'
-  require: <[confirm]>
-  controller: 'RailsConfirmCtrl'
-  compile: (tElement, tAttrs) ->
-    const {$attr} = tAttrs
+.controller 'noopRailsRemoteFormCtrl' !->
+  @submit = ($form) ->
+    $form.0.submit!
     #
-    # Do nothing here, just inject RailsConfirmCtrl
-    #
-    return if $attr.confirm isnt 'data-confirm' or $attr.remote is 'data-remote' or $attr.method is 'data-method'
-    postLinkFn
+    then: angular.noop
 
 .controller 'RailsRemoteFormCtrl' <[
         $scope  $parse  $http
@@ -100,6 +78,29 @@ angular.module 'angular.ujs' <[]>
       #
       $http config .then successCallback, errorCallback
 
+.directive 'confirm' ->
+
+  const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
+    const confirmCtrl = $ctrls.0
+    
+    const onClickHandler = !(event) ->
+      confirmCtrl.denyDefaultAction event unless confirmCtrl.allowAction $attrs
+
+    $element.on 'click' onClickHandler
+    $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
+
+
+  restrict: 'A'
+  require: <[ confirm ]>
+  controller: 'RailsConfirmCtrl'
+  compile: (tElement, tAttrs) ->
+    const {$attr} = tAttrs
+    #
+    # Do nothing here, just inject RailsConfirmCtrl
+    #
+    return if $attr.confirm isnt 'data-confirm' or $attr.remote is 'data-remote' or $attr.method is 'data-method'
+    postLinkFn
+
 .directive 'remote' <[
        $controller
 ]> ++ ($controller) ->
@@ -122,7 +123,7 @@ angular.module 'angular.ujs' <[]>
     $element.on 'submit' onSubmitHandler
     $scope.$on '$destroy' !-> $element.off 'submit' onSubmitHandler
 
-  require: <[remote ?confirm]>
+  require: <[ remote ?confirm ]>
   restrict: 'A'
   controller: 'RailsRemoteFormCtrl'
   compile: (tElement, tAttrs) ->
@@ -162,7 +163,7 @@ angular.module 'angular.ujs' <[]>
     $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
 
 
-  require: <[?confirm ?remote]>
+  require: <[ ?confirm ?remote ]>
   restrict: 'A'
   compile: (tElement, tAttrs) ->
     return if tAttrs.$attr.method isnt 'data-method'

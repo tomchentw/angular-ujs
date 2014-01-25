@@ -137,7 +137,7 @@ describe 'RailsRemoteFormCtrl' !(...) ->
 
     const EXPECTED_COLOR = 'green'
     const EXPECTED_DESC = 'angular-ujs is ready to work with your awesome project!!'
-    const COLORS = <[red green blue]>
+    const COLORS = <[ red green blue ]>
 
     $rootScope.colors = COLORS
 
