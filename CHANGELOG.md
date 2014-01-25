@@ -1,3 +1,12 @@
+<a name="0.4.7"></a>
+### 0.4.7 (2014-01-25)
+
+
+#### Features
+
+* **spec:** add test coverages ([35b186acaed43bd5c4e910ecdace485fe2460ff8](git://github.com/tomchentw/angular-ujs.git/commit/35b186acaed43bd5c4e910ecdace485fe2460ff8))
+
+
 <a name="0.4.6"></a>
 ### 0.4.6 (2014-01-17)
 
