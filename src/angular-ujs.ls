@@ -7,17 +7,10 @@ const denyDefaultAction = !(event) ->
 
 angular.module 'angular.ujs' <[
 ]>
-.config <[
-        $provide  $injector
-]> ++ !($provide, $injector) ->
-  const NAME = '$getRailsCSRF'
-  return if $injector.has NAME
-  /*
-   * Maybe provided in `ng-rails-csrf`
-   */
-  $provide.factory NAME, <[
-         $document
-  ]> ++ ($document) -> ->
+.factory '$getRailsCSRF' <[
+       $document
+]> ++ ($document) -> 
+  ->
     const metas       = {}
     for meta in $document.0.querySelectorAll 'meta[name^="csrf-"]'
       meta = angular.element meta
@@ -30,10 +23,10 @@ angular.module 'angular.ujs' <[
   @denyDefaultAction = denyDefaultAction
 
 .controller 'RailsConfirmCtrl' <[
-        $window
-]> ++ !($window) ->
+        $window  $attrs
+]> ++ !($window, $attrs) ->
 
-  @allowAction = ($attrs) ->
+  @allowAction = ->
     const message = $attrs.confirm
     angular.isDefined message and $window.confirm message
 
@@ -46,17 +39,19 @@ angular.module 'angular.ujs' <[
     then: angular.noop
 
 .controller 'RailsRemoteFormCtrl' <[
-        $scope  $parse  $http
-]> ++ !($scope, $parse, $http) ->
+        $scope  $attrs  $parse  $http
+]> ++ !($scope, $attrs, $parse, $http) ->
     const successCallback = !(response) ->
       $scope.$emit 'rails:remote:success' response
 
     const errorCallback = !(response) ->
       $scope.$emit 'rails:remote:error' response
 
-    @submit = ($form, modelName) ->
+    @submit = ($form) ->
       const targetScope = $form.scope!
+      const modelName = $attrs.remote
       const data = {}
+
       if "#modelName" isnt 'true'
         $parse modelName .assign data, targetScope.$eval(modelName)
       else
@@ -80,14 +75,15 @@ angular.module 'angular.ujs' <[
 
 .directive 'confirm' ->
 
-  const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
-    const confirmCtrl = $ctrls.0
-    
-    const onClickHandler = !(event) ->
-      confirmCtrl.denyDefaultAction event unless confirmCtrl.allowAction $attrs
+  !function onClickHandler (event)
+    # @ is RailsConfirmCtrl
+    @denyDefaultAction event unless @allowAction!
 
-    $element.on 'click' onClickHandler
-    $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
+  !function postLinkFn ($scope, $element, $attrs, $ctrls)
+    const callback = angular.bind $ctrls.0, onClickHandler
+    
+    $element.on 'click' callback
+    $scope.$on '$destroy' !-> $element.off 'click' callback
 
 
   restrict: 'A'
@@ -105,23 +101,23 @@ angular.module 'angular.ujs' <[
        $controller
 ]> ++ ($controller) ->
 
-  const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
-    const [
-      remoteCtrl
-      confirmCtrl || $controller 'noopRailsConfirmCtrl' {$scope}
-    ] = $ctrls
-    #
-    const onSubmitHandler = !(event) ->
-      confirmCtrl.denyDefaultAction event
-      return unless confirmCtrl.allowAction $attrs
-      #
-      remoteCtrl.submit $element, $attrs.remote
+  !function onSubmitHandler ($element, event)
+    @.1.denyDefaultAction event
+
+    if @.1.allowAction!
+      @.0.submit $element
+
+  !function postLinkFn ($scope, $element, $attrs, $ctrls)
+    $ctrls.1 ||= $controller 'noopRailsConfirmCtrl' {$scope}
+
+    const callback = angular.bind $ctrls, onSubmitHandler, $element
     #
     # If $element.is 'a', it won't get the 'submit' event.
     # We can assume 'onSubmitHandler' will be triggered on 'form' $element.
     #  
-    $element.on 'submit' onSubmitHandler
-    $scope.$on '$destroy' !-> $element.off 'submit' onSubmitHandler
+    $element.on 'submit' callback
+    $scope.$on '$destroy' !-> $element.off 'submit' callback
+
 
   require: <[ remote ?confirm ]>
   restrict: 'A'
@@ -134,33 +130,34 @@ angular.module 'angular.ujs' <[
        $controller  $compile  $document  $getRailsCSRF
 ]> ++ ($controller, $compile, $document, $getRailsCSRF) ->
 
-  const postLinkFn = !($scope, $element, $attrs, $ctrls) ->
-    const [
-      confirmCtrl || $controller 'noopRailsConfirmCtrl' {$scope}
-      remoteCtrl  || $controller 'noopRailsRemoteFormCtrl' {$scope}
-    ] = $ctrls
+  !function onClickHandler ($scope, $attrs, event)
+    @.0.denyDefaultAction event if @.0.allowAction!
 
-    const onClickHandler = !(event) ->
-      confirmCtrl.denyDefaultAction event if confirmCtrl.allowAction $attrs
+    const metaTags    = $getRailsCSRF!
+    const childScope  = $scope.$new!
+    const $form       = $compile("""
+      <form class="ng-hide" method="POST" action="#{ $attrs.href }">
+        <input type="text" name="_method" ng-model="_method">
+        <input type="text" name="#{ metaTags['csrf-param'] }" value="#{ metaTags['csrf-token'] }">
+      </form>
+    """)(childScope)
+    $document.find 'body' .append $form
+    
+    childScope.$apply !-> childScope._method = $attrs.method
 
-      const metaTags    = $getRailsCSRF!
-      const childScope  = $scope.$new!
-      const $form       = $compile("""
-        <form class="ng-hide" method="POST" action="#{ $attrs.href }">
-          <input type="text" name="_method" ng-model="_method">
-          <input type="text" name="#{ metaTags['csrf-param'] }" value="#{ metaTags['csrf-token'] }">
-        </form>
-      """)(childScope)
-      $document.find 'body' .append $form
-      
-      childScope.$apply !-> childScope._method = $attrs.method
+    <-! @.1.submit $form .then
+    childScope.$destroy!
+    $form.remove!
 
-      <-! remoteCtrl.submit $form, true .then
-      childScope.$destroy!
-      $form.remove!
-
-    $element.on 'click' onClickHandler
-    $scope.$on '$destroy' !-> $element.off 'click' onClickHandler
+  !function postLinkFn ($scope, $element, $attrs, $ctrls)
+    const controllerArgs = {$scope, $attrs}
+    $ctrls.0 ||= $controller 'noopRailsConfirmCtrl' controllerArgs
+    $ctrls.1 ||= $controller 'noopRailsRemoteFormCtrl' controllerArgs
+    
+    const callback = angular.bind $ctrls, onClickHandler, $scope, $attrs
+    
+    $element.on 'click' callback
+    $scope.$on '$destroy' !-> $element.off 'click' callback
 
 
   require: <[ ?confirm ?remote ]>

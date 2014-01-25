@@ -1,11 +1,12 @@
 (...) <-! describe 'module angular.ujs'
-$compile = $rootScope = $document = $httpBackend = $sniffer = void
+$compile = $rootScope = $document = $controller = $httpBackend = $sniffer = void
 
 beforeEach module 'angular.ujs'
-beforeEach inject !(_$compile_, _$rootScope_, _$document_, _$httpBackend_, _$sniffer_) ->
+beforeEach inject !(_$compile_, _$rootScope_, _$document_, _$controller_, _$httpBackend_, _$sniffer_) ->
   $compile      := _$compile_
   $rootScope    := _$rootScope_
   $document     := _$document_
+  $controller   := _$controller_
   $httpBackend  := _$httpBackend_
   $sniffer      := _$sniffer_
 
@@ -17,7 +18,7 @@ afterEach !(...) ->
 it 'should start test' !(...) ->
   expect true .toBeTruthy!
 
-describe '$getRailsCSRF conditional inject' !(...) ->
+describe '$getRailsCSRF service' !(...) ->
   const MOCK_META_TAGS = '''
     <meta content="authenticity_token" name="csrf-param">
     <meta content="qwertyuiopasdfghjklzxcvbnm=" name="csrf-token">
@@ -33,7 +34,7 @@ describe '$getRailsCSRF conditional inject' !(...) ->
 describe 'noopRailsConfirmCtrl' !(...) ->
   noopCtrl = void
 
-  beforeEach inject !($controller) ->
+  beforeEach !(...) ->
     noopCtrl := $controller 'noopRailsConfirmCtrl' $scope: $rootScope
 
   it 'should be like RailsConfirmCtrl' !(...) ->    
@@ -49,45 +50,47 @@ describe 'noopRailsConfirmCtrl' !(...) ->
     expect event.isPropagationStopped! .toBeTruthy!
 
 describe 'RailsConfirmCtrl' !(...) ->
-  railsConfirmCtrl = confirmSpy = void
+  confirmSpy = void
 
-  beforeEach inject !($controller) ->
-    railsConfirmCtrl  := $controller 'RailsConfirmCtrl' $scope: $rootScope
-    confirmSpy        := spyOn window, 'confirm'
+  beforeEach !(...) ->
+    confirmSpy := spyOn window, 'confirm'
 
-  it 'should have a denyDefaultAction method' !(...) ->
-    expect railsConfirmCtrl.denyDefaultAction .toBeDefined!
+  it 'should have some methods' !(...) ->
+    const railsConfirmCtrl = $controller 'RailsConfirmCtrl' $scope: $rootScope, $attrs: {}
 
-  it 'should have a allowAction method' !(...) ->
     expect railsConfirmCtrl.allowAction .toBeDefined!
+    expect railsConfirmCtrl.denyDefaultAction .toBeDefined!
 
   it "shouldn't allow action when message missing" !(...) ->
     const $attrs = do
       confirm: void
+    const railsConfirmCtrl = $controller 'RailsConfirmCtrl' $scope: $rootScope, $attrs: $attrs
 
-    expect railsConfirmCtrl.allowAction($attrs) .toBeFalsy!
+    expect railsConfirmCtrl.allowAction! .toBeFalsy!
     expect confirmSpy .not.toHaveBeenCalled!
 
   it "shouldn't allow action when cancel confirm" !(...) ->
     confirmSpy := confirmSpy.andReturn false
     const $attrs = do
       confirm: 'iMessage'
+    const railsConfirmCtrl = $controller 'RailsConfirmCtrl' $scope: $rootScope, $attrs: $attrs
 
-    expect railsConfirmCtrl.allowAction($attrs) .toBeFalsy!
+    expect railsConfirmCtrl.allowAction! .toBeFalsy!
     expect confirmSpy .toHaveBeenCalled!
 
   it 'should allow action when message provided and confirmed' !(...) ->
     confirmSpy := confirmSpy.andReturn true
     const $attrs = do
       confirm: 'iMessage'
+    const railsConfirmCtrl = $controller 'RailsConfirmCtrl' $scope: $rootScope, $attrs: $attrs
 
-    expect railsConfirmCtrl.allowAction($attrs) .toBeTruthy!
+    expect railsConfirmCtrl.allowAction! .toBeTruthy!
     expect confirmSpy .toHaveBeenCalled!
 
 describe 'noopRailsRemoteFormCtrl' !(...) ->
   noopCtrl = void
 
-  beforeEach inject !($controller) ->
+  beforeEach !(...) ->
     noopCtrl := $controller 'noopRailsRemoteFormCtrl' $scope: $rootScope
 
   it 'should submit form naively' !(...) ->
@@ -99,15 +102,12 @@ describe 'noopRailsRemoteFormCtrl' !(...) ->
     expect promise.then .toBeDefined!
 
 describe 'RailsRemoteFormCtrl' !(...) ->
-  railsRemoteFormCtrl = void
-
-  beforeEach inject !($controller) ->
-    railsRemoteFormCtrl := $controller 'RailsRemoteFormCtrl' $scope: $rootScope
-
   it 'should have a submit method' !(...) ->
+    const railsRemoteFormCtrl = $controller 'RailsRemoteFormCtrl' $scope: $rootScope, $attrs: {}
     expect railsRemoteFormCtrl.submit .toBeDefined!
 
   it 'should submit simple form using $http' !(...) ->
+    const railsRemoteFormCtrl = $controller 'RailsRemoteFormCtrl' $scope: $rootScope, $attrs: {remote: true}
     const EXPECTED_NAME = 'angular-ujs'
     
     $httpBackend.expectPOST '/users' do
@@ -124,11 +124,13 @@ describe 'RailsRemoteFormCtrl' !(...) ->
     $element.find 'input' .eq 0 .val EXPECTED_NAME .change!
     $rootScope.$digest!
 
-    railsRemoteFormCtrl.submit $element, true
+    railsRemoteFormCtrl.submit $element
     $httpBackend.flush!
     $element.remove!
 
   it 'should submit complex, named form using $http' !(...) ->
+    const railsRemoteFormCtrl = $controller 'RailsRemoteFormCtrl' $scope: $rootScope, $attrs: {remote: 'user'}
+    
     const EXPECTED_NAME = 'angular-ujs'
     const EXPECTED_EMAIL = 'developer@tomchentw.com'
     const EXPECTED_TOS = 'read'
@@ -180,7 +182,7 @@ describe 'RailsRemoteFormCtrl' !(...) ->
     $element.find 'textarea' .val EXPECTED_DESC .change!
     $rootScope.$digest!
 
-    railsRemoteFormCtrl.submit $element, 'user'
+    railsRemoteFormCtrl.submit $element
     $httpBackend.flush!
     $element.remove!
 
