@@ -90,8 +90,13 @@ describe 'noopRailsRemoteFormCtrl' !(...) ->
   beforeEach inject !($controller) ->
     noopCtrl := $controller 'noopRailsRemoteFormCtrl' $scope: $rootScope
 
-  it 'should have a submit method' !(...) ->
+  it 'should submit form naively' !(...) ->
     expect noopCtrl.submit .toBeDefined!
+
+    const $form = [jasmine.createSpyObj 'form', <[ submit ]>]
+    const promise = noopCtrl.submit $form
+    expect $form.0.submit .toHaveBeenCalled!
+    expect promise.then .toBeDefined!
 
 describe 'RailsRemoteFormCtrl' !(...) ->
   railsRemoteFormCtrl = void
@@ -208,8 +213,9 @@ describe 'confirm directive' !(...) ->
     expect confirmSpy .toHaveBeenCalled!
 
 describe 'remote directive' !(...) ->
+  const EXPECTED_NAME = 'angular-ujs'
+
   it 'should submit using $http for form element' !(...) ->
-    const EXPECTED_NAME = 'angular-ujs'
     const confirmSpy = spyOn window, 'confirm'
     
     $httpBackend.expectPOST '/users' do
@@ -234,7 +240,6 @@ describe 'remote directive' !(...) ->
     expect confirmSpy .not.toHaveBeenCalled!
 
   it 'should submit with named data-remote' !(...) ->
-    const EXPECTED_NAME = 'angular-ujs'
     const confirmSpy = spyOn window, 'confirm'
     
     $httpBackend.expectPOST '/users' do
@@ -259,8 +264,24 @@ describe 'remote directive' !(...) ->
 
     expect confirmSpy .not.toHaveBeenCalled!
 
+  it 'should work with confirm directive when disallow dialog' !(...) ->
+    const confirmSpy = spyOn window, 'confirm' .andReturn false
+    const $element = $compile('''
+      <form method="POST" action="/users" data-confirm="Are u sure?" data-remote="true">
+        <input ng-model="user.name" type="text">
+        <input type='submit'>
+      </form>
+    ''')($rootScope)
+    $document.find 'body' .append $element
+
+    $element.find 'input' .eq 0 .val EXPECTED_NAME .change!
+    $rootScope.$digest!
+    
+    $element.find 'input' .eq 1 .click!
+    
+    expect confirmSpy .toHaveBeenCalled!
+
   it 'should work with confirm directive' !(...) ->
-    const EXPECTED_NAME = 'angular-ujs'
     const confirmSpy = spyOn window, 'confirm' .andReturn true
     
     $httpBackend.expectPOST '/users' do
