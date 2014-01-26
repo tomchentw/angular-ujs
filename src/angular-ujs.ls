@@ -75,12 +75,11 @@ angular.module 'angular.ujs' <[
 
 .directive 'confirm' ->
 
-  !function onClickHandler (event)
-    # @ is RailsConfirmCtrl
-    @denyDefaultAction event unless @allowAction!
+  !function onClickHandler (confirmCtrl, event)
+    confirmCtrl.denyDefaultAction event unless confirmCtrl.allowAction!
 
   !function postLinkFn ($scope, $element, $attrs, $ctrls)
-    const callback = angular.bind $ctrls.0, onClickHandler
+    const callback = angular.bind void, onClickHandler, $ctrls.0
     
     $element.on 'click' callback
     $scope.$on '$destroy' !-> $element.off 'click' callback
@@ -101,16 +100,16 @@ angular.module 'angular.ujs' <[
        $controller
 ]> ++ ($controller) ->
 
-  !function onSubmitHandler ($element, event)
-    @.1.denyDefaultAction event
+  !function onSubmitHandler ($element, $ctrls, event)
+    $ctrls.1.denyDefaultAction event
 
-    if @.1.allowAction!
-      @.0.submit $element
+    if $ctrls.1.allowAction!
+      $ctrls.0.submit $element
 
   !function postLinkFn ($scope, $element, $attrs, $ctrls)
-    $ctrls.1 ||= $controller 'noopRailsConfirmCtrl' {$scope}
+    $ctrls.1 = $controller 'noopRailsConfirmCtrl' {$scope} unless $ctrls.1
 
-    const callback = angular.bind $ctrls, onSubmitHandler, $element
+    const callback = angular.bind void, onSubmitHandler, $element, $ctrls
     #
     # If $element.is 'a', it won't get the 'submit' event.
     # We can assume 'onSubmitHandler' will be triggered on 'form' $element.
@@ -130,8 +129,8 @@ angular.module 'angular.ujs' <[
        $controller  $compile  $document  $getRailsCSRF
 ]> ++ ($controller, $compile, $document, $getRailsCSRF) ->
 
-  !function onClickHandler ($scope, $attrs, event)
-    @.0.denyDefaultAction event if @.0.allowAction!
+  !function onClickHandler ($scope, $attrs, $ctrls, event)
+    $ctrls.0.denyDefaultAction event if $ctrls.0.allowAction!
 
     const metaTags    = $getRailsCSRF!
     const childScope  = $scope.$new!
@@ -145,16 +144,16 @@ angular.module 'angular.ujs' <[
     
     childScope.$apply !-> childScope._method = $attrs.method
 
-    <-! @.1.submit $form .then
+    <-! $ctrls.1.submit $form .then
     childScope.$destroy!
     $form.remove!
 
   !function postLinkFn ($scope, $element, $attrs, $ctrls)
     const controllerArgs = {$scope, $attrs}
-    $ctrls.0 ||= $controller 'noopRailsConfirmCtrl' controllerArgs
-    $ctrls.1 ||= $controller 'noopRailsRemoteFormCtrl' controllerArgs
+    $ctrls.0 = $controller 'noopRailsConfirmCtrl' controllerArgs unless $ctrls.0
+    $ctrls.1 = $controller 'noopRailsRemoteFormCtrl' controllerArgs unless $ctrls.1
     
-    const callback = angular.bind $ctrls, onClickHandler, $scope, $attrs
+    const callback = angular.bind $ctrls, onClickHandler, $scope, $attrs, $ctrls
     
     $element.on 'click' callback
     $scope.$on '$destroy' !-> $element.off 'click' callback
