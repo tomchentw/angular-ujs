@@ -3,6 +3,7 @@ require! {
   'event-stream'
   gulp
   'gulp-livescript'
+  'gulp-markdown-code'
   'gulp-header'
   'gulp-uglify'
   'gulp-rename'
@@ -27,14 +28,16 @@ const getHeaderStream = ->
 """
 
 const getBuildStream = ->
-  return gulp.src 'src/angular-ujs.ls'
+  return gulp.src 'src/angular-ujs.md'
+    .pipe gulp-markdown-code!
     .pipe gulp-livescript!
     .pipe getHeaderStream!
     .pipe gulp.dest '.'
     .pipe gulp.dest 'vendor/assets/javascripts/'
 
 gulp.task 'bare-build' ->
-  return gulp.src 'src/angular-ujs.ls'
+  return gulp.src 'src/angular-ujs.md'
+    .pipe gulp-markdown-code!
     .pipe gulp-livescript bare: true
     .pipe gulp.dest 'tmp/'
     .pipe gulp-exec('bower install')
