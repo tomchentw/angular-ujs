@@ -77,7 +77,7 @@ gulp.task 'uglify' <[ bump ]> ->
   return getBuildStream!
     .pipe gulp-uglify!
     .pipe getHeaderStream!
-    .pipe gulp-rename ext: '.min.js'
+    .pipe gulp-rename extname: '.min.js'
     .pipe gulp.dest '.'
 
 gulp.task 'before-release' <[ uglify ]> ->
