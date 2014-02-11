@@ -37,8 +37,10 @@
     "angular-ujs.gemspec"
   ],
   "dependencies": {
-    "jquery": "~2.0.3",
-    "angular": "~1.2.8",
-    "angular-mocks": "~1.2.8"
+    "angular": "~1.2.13"
+  },
+  "devDependencies": {
+    "jquery": "~2.1.0",
+    "angular-mocks": "~1.2.13"
   }
 }
