@@ -1,3 +1,17 @@
+<a name="0.4.8"></a>
+### 0.4.8 (2014-02-11)
+
+
+#### Bug Fixes
+
+* **bower.json:** update dependencies and devDependencies ([0912c85aa8c962f76f30756c002f6acb490f9304](git://github.com/tomchentw/angular-ujs.git/commit/0912c85aa8c962f76f30756c002f6acb490f9304))
+
+
+#### Features
+
+* **gulpfile:** adjust for gulp 3.5.0 from tomchentw-boilerplate ([b5d7a69145dc51a29c3cfbb474b4778a8597c21e](git://github.com/tomchentw/angular-ujs.git/commit/b5d7a69145dc51a29c3cfbb474b4778a8597c21e))
+
+
 <a name="0.4.7"></a>
 ### 0.4.7 (2014-01-25)
 

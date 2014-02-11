@@ -1,4 +1,4 @@
-/*! angular-ujs - v 0.4.7 - Sat Jan 25 2014 23:06:35 GMT+0800 (CST)
+/*! angular-ujs - v 0.4.8 - Tue Feb 11 2014 13:09:37 GMT+0800 (CST)
  * https://github.com/tomchentw/angular-ujs
  * Copyright (c) 2014 [tomchentw](https://github.com/tomchentw/);
  * Licensed [MIT](http://tomchentw.mit-license.org/)
@@ -78,14 +78,14 @@
       return $http(config).then(successCallback, errorCallback);
     };
   })).directive('confirm', function(){
-    function onClickHandler(event){
-      if (!this.allowAction()) {
-        this.denyDefaultAction(event);
+    function onClickHandler(confirmCtrl, event){
+      if (!confirmCtrl.allowAction()) {
+        confirmCtrl.denyDefaultAction(event);
       }
     }
     function postLinkFn($scope, $element, $attrs, $ctrls){
       var callback;
-      callback = angular.bind($ctrls[0], onClickHandler);
+      callback = angular.bind(void 8, onClickHandler, $ctrls[0]);
       $element.on('click', callback);
       $scope.$on('$destroy', function(){
         $element.off('click', callback);
@@ -105,18 +105,20 @@
       }
     };
   }).directive('remote', ['$controller'].concat(function($controller){
-    function onSubmitHandler($element, event){
-      this[1].denyDefaultAction(event);
-      if (this[1].allowAction()) {
-        this[0].submit($element);
+    function onSubmitHandler($element, $ctrls, event){
+      $ctrls[1].denyDefaultAction(event);
+      if ($ctrls[1].allowAction()) {
+        $ctrls[0].submit($element);
       }
     }
     function postLinkFn($scope, $element, $attrs, $ctrls){
       var callback;
-      $ctrls[1] || ($ctrls[1] = $controller('noopRailsConfirmCtrl', {
-        $scope: $scope
-      }));
-      callback = angular.bind($ctrls, onSubmitHandler, $element);
+      if (!$ctrls[1]) {
+        $ctrls[1] = $controller('noopRailsConfirmCtrl', {
+          $scope: $scope
+        });
+      }
+      callback = angular.bind(void 8, onSubmitHandler, $element, $ctrls);
       $element.on('submit', callback);
       $scope.$on('$destroy', function(){
         $element.off('submit', callback);
@@ -134,10 +136,10 @@
       }
     };
   })).directive('method', ['$controller', '$compile', '$document', '$getRailsCSRF'].concat(function($controller, $compile, $document, $getRailsCSRF){
-    function onClickHandler($scope, $attrs, event){
+    function onClickHandler($scope, $attrs, $ctrls, event){
       var metaTags, childScope, $form;
-      if (this[0].allowAction()) {
-        this[0].denyDefaultAction(event);
+      if ($ctrls[0].allowAction()) {
+        $ctrls[0].denyDefaultAction(event);
       }
       metaTags = $getRailsCSRF();
       childScope = $scope.$new();
@@ -146,7 +148,7 @@
       childScope.$apply(function(){
         childScope._method = $attrs.method;
       });
-      this[1].submit($form).then(function(){
+      $ctrls[1].submit($form).then(function(){
         childScope.$destroy();
         $form.remove();
       });
@@ -157,9 +159,13 @@
         $scope: $scope,
         $attrs: $attrs
       };
-      $ctrls[0] || ($ctrls[0] = $controller('noopRailsConfirmCtrl', controllerArgs));
-      $ctrls[1] || ($ctrls[1] = $controller('noopRailsRemoteFormCtrl', controllerArgs));
-      callback = angular.bind($ctrls, onClickHandler, $scope, $attrs);
+      if (!$ctrls[0]) {
+        $ctrls[0] = $controller('noopRailsConfirmCtrl', controllerArgs);
+      }
+      if (!$ctrls[1]) {
+        $ctrls[1] = $controller('noopRailsRemoteFormCtrl', controllerArgs);
+      }
+      callback = angular.bind($ctrls, onClickHandler, $scope, $attrs, $ctrls);
       $element.on('click', callback);
       $scope.$on('$destroy', function(){
         $element.off('click', callback);
