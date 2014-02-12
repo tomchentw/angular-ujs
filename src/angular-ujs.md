@@ -5,7 +5,7 @@ Unobtrusive scripting for AngularJS ( without jQuery dependency )
 
 ## Utils
 
-```LiveScript
+```livescript
 /*global angular:false*/
 'use strict'
 
@@ -17,7 +17,7 @@ Unobtrusive scripting for AngularJS ( without jQuery dependency )
 
 ## AngularJS Module definition
 
-```LiveScript
+```livescript
 angular.module 'angular.ujs' <[
 ]>
 ```
@@ -27,7 +27,7 @@ angular.module 'angular.ujs' <[
 
 Extract function from csrf token in html/head.
 
-```LiveScript
+```livescript
 .factory '$getRailsCSRF' <[
        $document
 ]> ++ ($document) -> 
@@ -45,7 +45,7 @@ Extract function from csrf token in html/head.
 
 Just allows the event's default action to be performed.
 
-```LiveScript
+```livescript
 .controller 'noopRailsConfirmCtrl' !->
   @allowAction = -> true
 
@@ -56,7 +56,7 @@ Just allows the event's default action to be performed.
 
 Confirm logic here:
 
-```LiveScript
+```livescript
 .controller 'RailsConfirmCtrl' <[
         $window  $attrs
 ]> ++ !($window, $attrs) ->
@@ -65,7 +65,7 @@ Confirm logic here:
 * allowAction: show a confirm from browser and return user's choice.  
 Confirm popup will be fired only when confirm message is defined (via $attr).
 
-```LiveScript
+```livescript
   @allowAction = ->
     const message = $attrs.confirm
     angular.isDefined message and $window.confirm message
@@ -73,7 +73,7 @@ Confirm popup will be fired only when confirm message is defined (via $attr).
 
 * denyDefaultAction: just use the default implementation
 
-```LiveScript
+```livescript
   @denyDefaultAction = denyDefaultAction
 ```
 
@@ -83,7 +83,7 @@ Confirm popup will be fired only when confirm message is defined (via $attr).
 
 Just submit the form with plain old dom submit api.
 
-```LiveScript
+```livescript
 .controller 'noopRailsRemoteFormCtrl' !->
   @submit = ($form) ->
     $form.0.submit!
@@ -95,7 +95,7 @@ Just submit the form with plain old dom submit api.
 
 Remote logic here:
 
-```LiveScript
+```livescript
 .controller 'RailsRemoteFormCtrl' <[
         $scope  $attrs  $parse  $http
 ]> ++ !($scope, $attrs, $parse, $http) ->
@@ -106,7 +106,7 @@ Remote logic here:
 * success: `rails:remote:success` event
 * failure: `rails:remote:error` event
 
-```LiveScript
+```livescript
     !function successCallback (response)
       $scope.$emit 'rails:remote:success' response
 
@@ -124,7 +124,7 @@ Remote logic here:
 
 ##### a String: will user `$scope.$eval(string)` to retrieve data
 
-```LiveScript
+```livescript
     @submit = ($form) ->
       const targetScope = $form.scope!
       const modelName = $attrs.remote
@@ -149,7 +149,7 @@ You should explicitly override method with `X-Http-Method-Override` so that rail
 
 ## [source](http://stackoverflow.com/a/1935237/1458162)
 
-```LiveScript
+```livescript
       const METHOD = data._method
       if METHOD isnt 'GET' and METHOD isnt 'POST'
         config.headers = 'X-Http-Method-Override': METHOD
@@ -161,20 +161,20 @@ You should explicitly override method with `X-Http-Method-Override` so that rail
 
 These logic (in `angular-ujs` module) will only apply to explicity defined data attribute by rails. Any other attribute (eg. x-confirm, confirm, ...) will have no effect.
 
-```LiveScript
+```livescript
 .directive 'confirm' ->
 ```
 
 Define a bound handler
 
-```LiveScript
+```livescript
   !function onClickHandler (confirmCtrl, event)
     confirmCtrl.denyDefaultAction event unless confirmCtrl.allowAction!
 ```
 
 Bind click handler with the controller
 
-```LiveScript
+```livescript
   !function postLinkFn ($scope, $element, $attrs, $ctrls)
     const callback = angular.bind void, onClickHandler, $ctrls.0
     
@@ -184,7 +184,7 @@ Bind click handler with the controller
 
 Directive Definition Object
 
-```LiveScript
+```livescript
   restrict: 'A'
   require: <[ confirm ]>
   controller: 'RailsConfirmCtrl'
@@ -195,14 +195,14 @@ Directive Definition Object
 Read non-normalized attribute name from tAttrs.
 Return undefined in compile function will skip the link phase for this directive (and thus have no effect).
 
-```LiveScript
+```livescript
     return if $attr.confirm isnt 'data-confirm' or $attr.remote is 'data-remote' or $attr.method is 'data-method'
     postLinkFn
 ```
 
 ### remote directive
 
-```LiveScript
+```livescript
 .directive 'remote' <[
        $controller
 ]> ++ ($controller) ->
@@ -217,7 +217,7 @@ Return undefined in compile function will skip the link phase for this directive
 Bind submit handler with controllers.
 The remote directive can be used in anchor tag, but there's no need to check template's tag name since it will never fire the submit event.
 
-```LiveScript
+```livescript
   !function postLinkFn ($scope, $element, $attrs, $ctrls)
     $ctrls.1 = $controller 'noopRailsConfirmCtrl' {$scope} unless $ctrls.1
 
@@ -229,7 +229,7 @@ The remote directive can be used in anchor tag, but there's no need to check tem
 
 Directive Definition Object
 
-```LiveScript
+```livescript
   require: <[ remote ?confirm ]>
   restrict: 'A'
   controller: 'RailsRemoteFormCtrl'
@@ -240,7 +240,7 @@ Directive Definition Object
 
 ### method directive
 
-```LiveScript
+```livescript
 .directive 'method' <[
        $controller  $compile  $document  $getRailsCSRF
 ]> ++ ($controller, $compile, $document, $getRailsCSRF) ->
@@ -251,7 +251,7 @@ Directive Definition Object
 
 For simple link that submit non-GET request, we need to create a native form for it, and thus csrf token is required. The form is hidden by `ng-hide` class.
 
-```LiveScript
+```livescript
     const metaTags    = $getRailsCSRF!
     const childScope  = $scope.$new!
     const $form       = $compile("""
@@ -267,7 +267,7 @@ For simple link that submit non-GET request, we need to create a native form for
 
 If this is combined with remote directive, we need to remove the form and child scope to prevent memory leak. Otherwise, page is redirected.
 
-```LiveScript
+```livescript
     <-! $ctrls.1.submit $form .then
     childScope.$destroy!
     $form.remove!
@@ -278,7 +278,7 @@ If this is combined with remote directive, we need to remove the form and child 
 
 Inject null controllers if they're not provided
 
-```LiveScript
+```livescript
     $ctrls.0 = $controller 'noopRailsConfirmCtrl' controllerArgs unless $ctrls.0
     $ctrls.1 = $controller 'noopRailsRemoteFormCtrl' controllerArgs unless $ctrls.1
     
