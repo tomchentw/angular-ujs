@@ -11,10 +11,10 @@ require! {
   'gulp-conventional-changelog'
 }
 
-const getJsonFile = ->
+function getJsonFile
   fs.readFileSync './package.json', 'utf-8' |> JSON.parse
 
-const getHeaderStream = ->
+function getHeaderStream
   const jsonFile = getJsonFile!
   const date = new Date
 
@@ -26,34 +26,18 @@ const getHeaderStream = ->
  */
 """
 
-const getBuildStream = ->
-  return gulp.src 'src/angular-ujs.ls'
-    .pipe gulp-livescript!
-    .pipe getHeaderStream!
-    .pipe gulp.dest '.'
-    .pipe gulp.dest 'vendor/assets/javascripts/'
-
-gulp.task 'bare-build' ->
-  return gulp.src 'src/angular-ujs.ls'
-    .pipe gulp-livescript bare: true
-    .pipe gulp.dest 'tmp/'
-    .pipe gulp-exec('bower install')
-
-gulp.task 'karma' <[ bare-build ]> ->
-  stream = gulp.src 'src/angular-ujs.spec.ls'
-    .pipe gulp-livescript!
-    .pipe gulp.dest 'tmp/'
+gulp.task 'test:karma' ->
+  stream = gulp.src 'package.json'
     .pipe gulp-exec('karma start test/karma.conf.js')
+  
+  return if process.env.TRAVIS
+    const TO_COVERALLS = 'find ./coverage -name lcov.info -follow -type f -print0 | xargs -0 cat | node_modules/.bin/coveralls'
+    stream.pipe gulp-exec(TO_COVERALLS) 
+  else
+    stream
 
-  const TO_COVERALLS = 'find ./coverage -name lcov.info -follow -type f -print0 | xargs -0 cat | node_modules/.bin/coveralls'
-  stream = stream.pipe gulp-exec(TO_COVERALLS) if process.env.TRAVIS
-
-  return stream
-
-gulp.task 'protractor' <[ build ]> ->
-  stream = gulp.src 'src/angular-ujs.scenario.ls'
-    .pipe gulp-livescript!
-    .pipe gulp.dest 'tmp/'
+gulp.task 'test:protractor' ->
+  stream = gulp.src 'package.json'
   
   stream = stream.pipe gulp-exec [
     'cd test/scenario-rails'
@@ -68,19 +52,22 @@ gulp.task 'protractor' <[ build ]> ->
   
   return stream
 
-gulp.task 'bump' ->
+gulp.task 'release:bump' ->
   return gulp.src <[ package.json bower.json ]>
     .pipe gulp-bump type: 'patch'
     .pipe gulp.dest '.'
 
-gulp.task 'uglify' <[ bump ]> ->
-  return getBuildStream!
-    .pipe gulp-uglify!
+gulp.task 'release:build' <[ release:bump ]> ->
+  return gulp.src 'src/angular-ujs.ls'
+    .pipe gulp-livescript!
     .pipe getHeaderStream!
+    .pipe gulp.dest '.'
+    .pipe gulp.dest 'vendor/assets/javascripts/'
+    .pipe gulp-uglify preserveComments: 'some'
     .pipe gulp-rename extname: '.min.js'
     .pipe gulp.dest '.'
 
-gulp.task 'before-release' <[ uglify ]> ->
+gulp.task 'release:commit' <[ release:build ]> ->
   const jsonFile = getJsonFile!
   const commitMsg = "chore(release): v#{ jsonFile.version }"
 
@@ -91,32 +78,25 @@ gulp.task 'before-release' <[ uglify ]> ->
     .pipe gulp-exec("git commit -m '#{ commitMsg }'")
     .pipe gulp-exec("git tag -a v#{ jsonFile.version } -m '#{ commitMsg }'")
 
-gulp.task 'release-git' <[ before-release ]> ->
+gulp.task 'publish:git' <[ release:commit ]> ->
   return gulp.src 'package.json'
     .pipe gulp-exec('git push')
     .pipe gulp-exec('git push --tags')
 
-gulp.task 'release-gem' <[ before-release ]> ->
+gulp.task 'publish:rubygems' <[ release:commit ]> ->
   return gulp.src 'package.json'
     .pipe gulp-exec('rake build release')
-
-gulp.task 'release-npm' <[ before-release ]> ->
-  return gulp.src 'package.json'
-    .pipe gulp-exec('npm publish')
-
 /*
  * Public tasks: 
  *
  * test, watch, release
  */
-gulp.task 'test' <[ karma protractor ]>
-
-gulp.task 'build' getBuildStream
+gulp.task 'test' <[ test:karma test:protractor ]>
 
 gulp.task 'watch' <[ test ]> ->
-  gulp.watch 'src/*.ls' <[ karma ]> # optimize if needed
+  gulp.watch 'src/*.ls' <[ test:karma ]>
 
-gulp.task 'release' <[ release-git release-gem  release-npm ]>
+gulp.task 'release' <[ publish:git publish:rubygems ]>
 /*
  * Public tasks end 
  *

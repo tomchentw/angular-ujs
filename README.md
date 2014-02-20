@@ -1,7 +1,7 @@
 # angular-ujs
 > Distributed via
 
-[![Gem Version](https://badge.fury.io/rb/angular-ujs.png)](http://badge.fury.io/rb/angular-ujs) [![NPM version](https://badge.fury.io/js/angular-ujs.png)](http://badge.fury.io/js/angular-ujs)
+[![Gem Version](https://badge.fury.io/rb/angular-ujs.png)](http://badge.fury.io/rb/angular-ujs)
 
 > Unobtrusive scripting for AngularJS ( without jQuery dependency )
 

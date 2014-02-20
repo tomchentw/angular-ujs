@@ -14,6 +14,7 @@ before_install:
 before_script:
 - npm install --quiet -g bower gulp karma protractor
 - npm install --quiet
+- bower install --quiet
 script: npm test
 after_script:
 - kill $(lsof -i :2999 -t)

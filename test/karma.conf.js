@@ -10,11 +10,11 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'bower_components/jquery/jquery.js',
+      'bower_components/jquery/dist/jquery.js',
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
-      'tmp/angular-ujs.js',
-      'tmp/angular-ujs.spec.js'
+      'src/angular-ujs.ls',
+      'src/angular-ujs.spec.ls'
     ],
 
     // use dots reporter, as travis terminal does not support escaping sequences
@@ -23,10 +23,11 @@ module.exports = function(config) {
     reporters: ['progress', 'coverage'],
 
     preprocessors: {
+      'src/*.ls': ['live'],
       // source files, that you wanna generate coverage for
       // do not include tests or libraries
       // (these files will be instrumented by Istanbul)
-      'tmp/angular-ujs.js': ['coverage']
+      'src/angular-ujs.ls': ['coverage']
     },
 
     // web server port
@@ -76,6 +77,7 @@ module.exports = function(config) {
     },
 
     plugins: [
+      'karma-live-preprocessor',
       'karma-jasmine',
       'karma-chrome-launcher',
       'karma-firefox-launcher',

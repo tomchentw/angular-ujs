@@ -1,3 +1,4 @@
+require('LiveScript');
 // A reference configuration file.
 var baseConfig = exports.config = {
   // ----- How to setup Selenium -----
