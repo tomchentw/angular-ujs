@@ -41,7 +41,7 @@ gulp.task 'test:karma' ->
 gulp.task 'test:protractor' ->
   stream = gulp.src 'package.json'
   
-  stream = stream.pipe gulp-exec [
+  stream.=pipe gulp-exec [
     'cd test/scenario-rails'
     'bundle install'
     'RAILS_ENV=test rake db:drop db:migrate'
@@ -170,7 +170,6 @@ gulp.task 'release:lib' <[ release:bump ]> ->
   .pipe gulp.dest '.'
   .pipe gulp-uglify preserveComments: 'some'
   .pipe gulp-rename extname: '.min.js'
-  .pipe gulp.dest path.join ...<[ vendor assets javascripts ]>
   .pipe gulp.dest '.'
 
 gulp.task 'release:commit' <[ release:lib ]> ->
