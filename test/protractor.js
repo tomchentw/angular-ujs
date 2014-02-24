@@ -54,7 +54,7 @@ var baseConfig = exports.config = {
   //
   // Spec patterns are relative to the location of this config.
   specs: [
-    '../tmp/angular-ujs.scenario.js'
+    'assets/javascripts/angular-ujs.scenario.ls'
   ],
 
   // ----- Capabilities to be passed to the webdriver instance ----

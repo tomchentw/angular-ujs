@@ -6,9 +6,9 @@
   "main": "angular-ujs.js",
   "scripts": {
     "test": "gulp test --require LiveScript",
-    "build": "gulp build --require LiveScript",
-    "watch": "gulp watch --require LiveScript",
-    "release": "gulp release --require LiveScript"
+    "develop": "gulp develop --require LiveScript",
+    "release": "gulp release --require LiveScript",
+    "release:app": "gulp release:app --require LiveScript"
   },
   "repository": {
     "type": "git",
@@ -37,23 +37,32 @@
   "homepage": "https://github.com/tomchentw/angular-ujs",
   "devDependencies": {
     "LiveScript": "~1.2.0",
-    "event-stream": "~3.1.0",
+    "temp": "~0.6.0",
     "gulp": "~3.5.2",
-    "gulp-livescript": "~0.1.2",
+    "gulp-util": "~2.2.14",
+    "gulp-livescript": "~0.2.0",
     "gulp-header": "~1.0.2",
     "gulp-uglify": "~0.2.1",
-    "gulp-rename": "~1.0.0",
+    "gulp-rename": "~1.1.0",
     "gulp-bump": "~0.1.4",
     "gulp-exec": "~1.0.4",
     "gulp-conventional-changelog": "~0.1.2",
+    "gulp-jade": "~0.4.1",
+    "gulp-ruby-sass": "~0.3.0",
+    "gulp-concat": "~2.1.7",
+    "gulp-livereload": "~1.1.1",
     "karma-live-preprocessor": "~0.2.2",
     "karma-script-launcher": "~0.1.0",
     "karma-chrome-launcher": "~0.1.2",
     "karma-firefox-launcher": "~0.1.3",
     "karma-jasmine": "~0.1.5",
     "karma-phantomjs-launcher": "~0.1.2",
-    "karma-coverage": "~0.1.5",
+    "karma-coverage": "~0.2.0",
     "karma": "~0.10.9",
-    "coveralls": "~2.7.1"
+    "coveralls": "~2.8.0",
+    "coveralls": "~2.8.0",
+    "tiny-lr": "~0.0.5",
+    "connect": "~2.13.0",
+    "connect-livereload": "~0.3.2"
   }
 }

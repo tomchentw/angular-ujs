@@ -19,17 +19,15 @@
   "private": false,
   "ignore": [
     "**/.*",
+    "app",
     "bower_components",
-    "example",
     "lib",
     "node_modules",
     "pkg",
-    "src",
+    "public",
     "test",
-    "tests",
     "tmp",
     "vendor",
-    "bower.json",
     "Gemfile",
     "gulpfile.ls",
     "package.json",
@@ -41,6 +39,9 @@
   },
   "devDependencies": {
     "jquery": "~2.1.0",
-    "angular-mocks": "~1.2.13"
+    "angular-sanitize": "~1.2.13",
+    "angular-mocks": "~1.2.13",
+    "angular-ui-bootstrap-bower": "~0.10.0",
+    "bootstrap-sass": "git://github.com/twbs/bootstrap-sass.git"
   }
 }
