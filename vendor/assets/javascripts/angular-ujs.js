@@ -1,15 +1,15 @@
-/*! angular-ujs - v 0.4.8 - Tue Feb 11 2014 13:09:37 GMT+0800 (CST)
+/*! angular-ujs - v 0.4.9 - Mon Feb 24 2014 14:35:50 GMT+0800 (CST)
  * https://github.com/tomchentw/angular-ujs
- * Copyright (c) 2014 [tomchentw](https://github.com/tomchentw/);
- * Licensed [MIT](http://tomchentw.mit-license.org/)
- *//*global angular:false*/
+ * Copyright (c) 2014 [tomchentw](https://github.com/tomchentw);
+ * Licensed [MIT](http://tomchentw.mit-license.org)
+ */
+/*global angular:false*/
 (function(){
   'use strict';
-  var denyDefaultAction;
-  denyDefaultAction = function(event){
+  function denyDefaultAction(event){
     event.preventDefault();
     event.stopPropagation();
-  };
+  }
   angular.module('angular.ujs', []).factory('$getRailsCSRF', ['$document'].concat(function($document){
     return function(){
       var metas, i$, ref$, len$, meta;

@@ -1,6 +1,6 @@
 {
   "name": "angular-ujs",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "Unobtrusive scripting for AngularJS ( without jQuery dependency )",
   "longDescription": "Ruby on Rails replacement for unobtrusive scripting library `jquery_ujs` implemented in AngularJS without jQuery dependency",
   "main": "angular-ujs.js",
@@ -59,7 +59,6 @@
     "karma-phantomjs-launcher": "~0.1.2",
     "karma-coverage": "~0.2.0",
     "karma": "~0.10.9",
-    "coveralls": "~2.8.0",
     "coveralls": "~2.8.0",
     "tiny-lr": "~0.0.5",
     "connect": "~2.13.0",
