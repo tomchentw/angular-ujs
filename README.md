@@ -7,7 +7,7 @@
 
 [![Travis CI   ](http://img.shields.io/travis/tomchentw/angular-ujs/master.svg)                   ](https://travis-ci.org/tomchentw/angular-ujs)
 [![Quality     ](http://img.shields.io/codeclimate/github/tomchentw/angular-ujs.svg)              ](https://codeclimate.com/github/tomchentw/angular-ujs)
-[![Coverage    ](http://img.shields.io/coveralls/tomchentw/angular-ujs.svg)                       ](https://codeclimate.com/github/tomchentw/angular-ujs)
+[![Coverage    ](http://img.shields.io/coveralls/tomchentw/angular-ujs.svg)                       ](https://coveralls.io/r/tomchentw/angular-ujs)
 [![Dependencies](http://img.shields.io/gemnasium/tomchentw/angular-ujs.svg)                       ](https://gemnasium.com/tomchentw/angular-ujs)
 
 
