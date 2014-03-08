@@ -1,11 +1,15 @@
 # angular-ujs
 > Distributed via
 
-[![Gem Version](https://badge.fury.io/rb/angular-ujs.png)](http://badge.fury.io/rb/angular-ujs)
+[![Version     ](http://img.shields.io/gem/v/angular-ujs.svg)                                     ](https://rubygems.org/gems/angular-ujs)
 
 > Unobtrusive scripting for AngularJS ( without jQuery dependency )
 
-[![Build Status](https://secure.travis-ci.org/tomchentw/angular-ujs.png)](http://travis-ci.org/tomchentw/angular-ujs) [![Coverage Status](https://coveralls.io/repos/tomchentw/angular-ujs/badge.png?branch=master)](https://coveralls.io/r/tomchentw/angular-ujs?branch=master) [![Code Climate](https://codeclimate.com/github/tomchentw/angular-ujs.png)](https://codeclimate.com/github/tomchentw/angular-ujs)  [![Dependency Status](https://gemnasium.com/tomchentw/angular-ujs.png)](https://gemnasium.com/tomchentw/angular-ujs)
+[![Travis CI   ](http://img.shields.io/travis/tomchentw/angular-ujs/master.svg)                   ](https://travis-ci.org/tomchentw/angular-ujs)
+[![Quality     ](http://img.shields.io/codeclimate/github/tomchentw/angular-ujs.svg)              ](https://codeclimate.com/github/tomchentw/angular-ujs)
+[![Coverage    ](http://img.shields.io/coveralls/tomchentw/angular-ujs.svg)                       ](https://codeclimate.com/github/tomchentw/angular-ujs)
+[![Dependencies](http://img.shields.io/gemnasium/tomchentw/angular-ujs.svg)                       ](https://gemnasium.com/tomchentw/angular-ujs)
+
 
 ## Project philosophy
 
@@ -103,7 +107,7 @@ For `angularjs` apps, **ONLY** those items with `ng-model` will be submitted wit
 
 ## Contributing
 
-[![devDependency Status](https://david-dm.org/tomchentw/angular-ujs/dev-status.png?branch=master)](https://david-dm.org/tomchentw/angular-ujs#info=devDependencies) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/tomchentw/angular-ujs/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![devDependency Status](https://david-dm.org/tomchentw/angular-ujs/dev-status.svg?theme=shields.io)](https://david-dm.org/tomchentw/angular-ujs#info=devDependencies)
 
 1. Fork it ( http://github.com/tomchentw/angular-ujs/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
