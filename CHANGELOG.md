@@ -1,3 +1,12 @@
+<a name="0.4.10"></a>
+### 0.4.10 (2014-03-09)
+
+
+#### Bug Fixes
+
+* **travis:** typo ([b3bbef1f](https://github.com/tomchentw/angular-ujs/commit/b3bbef1f85c830eedeb9a4c623ff6e8809d48610))
+
+
 <a name="0.4.9"></a>
 ### 0.4.9 (2014-02-24)
 
