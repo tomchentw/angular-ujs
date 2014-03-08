@@ -18,7 +18,7 @@ install:
 	$(install)
 
 clean:
-	rm -rf node_modules bower_components tmp
+	rm -rf node_modules bower_components tmp pkg
 
 client: install
 	$(bin)/gulp client $(requireLS)
