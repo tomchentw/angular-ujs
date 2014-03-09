@@ -1,14 +1,14 @@
 # angular-ujs
 > Distributed via
 
-[![Version     ](http://img.shields.io/gem/v/angular-ujs.svg)                                     ](https://rubygems.org/gems/angular-ujs)
+[![Version     ](https://img.shields.io/gem/v/angular-ujs.svg)                                     ](https://rubygems.org/gems/angular-ujs)
 
 > Unobtrusive scripting for AngularJS ( without jQuery dependency )
 
-[![Travis CI   ](http://img.shields.io/travis/tomchentw/angular-ujs/master.svg)                   ](https://travis-ci.org/tomchentw/angular-ujs)
-[![Quality     ](http://img.shields.io/codeclimate/github/tomchentw/angular-ujs.svg)              ](https://codeclimate.com/github/tomchentw/angular-ujs)
-[![Coverage    ](http://img.shields.io/coveralls/tomchentw/angular-ujs.svg)                       ](https://coveralls.io/r/tomchentw/angular-ujs)
-[![Dependencies](http://img.shields.io/gemnasium/tomchentw/angular-ujs.svg)                       ](https://gemnasium.com/tomchentw/angular-ujs)
+[![Travis CI   ](https://img.shields.io/travis/tomchentw/angular-ujs/master.svg)                   ](https://travis-ci.org/tomchentw/angular-ujs)
+[![Quality     ](https://img.shields.io/codeclimate/github/tomchentw/angular-ujs.svg)              ](https://codeclimate.com/github/tomchentw/angular-ujs)
+[![Coverage    ](https://img.shields.io/coveralls/tomchentw/angular-ujs.svg)                       ](https://coveralls.io/r/tomchentw/angular-ujs)
+[![Dependencies](https://img.shields.io/gemnasium/tomchentw/angular-ujs.svg)                       ](https://gemnasium.com/tomchentw/angular-ujs)
 
 
 ## Project philosophy
@@ -109,7 +109,7 @@ For `angularjs` apps, **ONLY** those items with `ng-model` will be submitted wit
 
 [![devDependency Status](https://david-dm.org/tomchentw/angular-ujs/dev-status.svg?theme=shields.io)](https://david-dm.org/tomchentw/angular-ujs#info=devDependencies)
 
-1. Fork it ( http://github.com/tomchentw/angular-ujs/fork )
+1. Fork it ( https://github.com/tomchentw/angular-ujs/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
