@@ -37,7 +37,7 @@ test.protractor: install
 	cd test/scenario-rails;\
 		bundle install;\
 		RAILS_ENV=test rake db:drop db:migrate;\
-		rails s -d -e test -p 2999\
+		rails s -d -e test -p 2999
 # endif
 	$(bin)/webdriver-manager update
 	$(bin)/protractor test/protractor.js
