@@ -1,6 +1,8 @@
 /*global angular:false*/
 'use strict'
 
+const {bind} = angular
+
 !function denyDefaultAction (event)
   event.preventDefault!
   event.stopPropagation!
@@ -17,61 +19,70 @@ angular.module 'angular.ujs' <[
       metas[meta.attr 'name'] = meta.attr 'content'
     metas
 
-.controller 'noopRailsConfirmCtrl' !->
-  @allowAction = -> true
+.controller 'noopRailsConfirmCtrl' class
 
-  @denyDefaultAction = denyDefaultAction
+  allowAction: -> true
 
-.controller 'RailsConfirmCtrl' <[
-        $window  $attrs
-]> ++ !($window, $attrs) ->
+  denyDefaultAction: denyDefaultAction
 
-  @allowAction = ->
-    const message = $attrs.confirm
-    angular.isDefined message and $window.confirm message
+.controller 'RailsConfirmCtrl' class
 
-  @denyDefaultAction = denyDefaultAction
+  allowAction: ->
+    const message = @$attrs.confirm
+    angular.isDefined message and @$window.confirm message
 
-.controller 'noopRailsRemoteFormCtrl' !->
-  @submit = ($form) ->
+  denyDefaultAction: denyDefaultAction
+
+  @$inject = <[
+     $window   $attrs ]>
+  !(@$window, @$attrs) ->
+
+.controller 'noopRailsRemoteFormCtrl' class
+
+  submit: ($form) ->
     $form.0.submit!
     #
     then: angular.noop
 
-.controller 'RailsRemoteFormCtrl' <[
-        $scope  $attrs  $parse  $http
-]> ++ !($scope, $attrs, $parse, $http) ->
-    const successCallback = !(response) ->
-      $scope.$emit 'rails:remote:success' response
+.controller 'RailsRemoteFormCtrl' class
 
-    const errorCallback = !(response) ->
-      $scope.$emit 'rails:remote:error' response
+  submit: ($form) ->
+    const targetScope = $form.scope!
+    const modelName = @$attrs.remote
+    const data = {}
 
-    @submit = ($form) ->
-      const targetScope = $form.scope!
-      const modelName = $attrs.remote
-      const data = {}
+    if "#modelName" isnt 'true'
+      @$parse modelName .assign data, targetScope.$eval(modelName)
+    else
+      for own key, value of targetScope
+        continue if key is 'this' || key.0 is '$'
+        data[key] = value
+    # 
+    const config = do
+      url: $form.attr 'action'
+      method: $form.attr 'method'
+      data: data
+    #
+    # Rails 4 bug here:
+    #   http://stackoverflow.com/a/1935237/1458162
+    #
+    const METHOD = data._method
+    if METHOD isnt 'GET' and METHOD isnt 'POST'
+      config.headers = 'X-Http-Method-Override': METHOD
+    #
+    @$http config .then @successCallback, @errorCallback
 
-      if "#modelName" isnt 'true'
-        $parse modelName .assign data, targetScope.$eval(modelName)
-      else
-        for own key, value of targetScope
-          continue if key is 'this' || key.0 is '$'
-          data[key] = value
-      # 
-      const config = do
-        url: $form.attr 'action'
-        method: $form.attr 'method'
-        data: data
-      #
-      # Rails 4 bug here:
-      #   http://stackoverflow.com/a/1935237/1458162
-      #
-      const METHOD = data._method
-      if METHOD isnt 'GET' and METHOD isnt 'POST'
-        config.headers = 'X-Http-Method-Override': METHOD
-      #
-      $http config .then successCallback, errorCallback
+  successCallback: !(response) ->
+    @$scope.$emit 'rails:remote:success' response
+
+  errorCallback: !(response) ->
+    @$scope.$emit 'rails:remote:error' response
+
+  @$inject = <[
+     $scope   $attrs   $parse   $http ]>
+  !(@$scope, @$attrs, @$parse, @$http) ->
+    @successCallback = bind @, @successCallback
+    @errorCallback = bind @, @errorCallback
 
 .directive 'confirm' ->
 
@@ -79,7 +90,7 @@ angular.module 'angular.ujs' <[
     confirmCtrl.denyDefaultAction event unless confirmCtrl.allowAction!
 
   !function postLinkFn ($scope, $element, $attrs, $ctrls)
-    const callback = angular.bind void, onClickHandler, $ctrls.0
+    const callback = bind void, onClickHandler, $ctrls.0
     
     $element.on 'click' callback
     $scope.$on '$destroy' !-> $element.off 'click' callback
@@ -109,7 +120,7 @@ angular.module 'angular.ujs' <[
   !function postLinkFn ($scope, $element, $attrs, $ctrls)
     $ctrls.1 = $controller 'noopRailsConfirmCtrl' {$scope} unless $ctrls.1
 
-    const callback = angular.bind void, onSubmitHandler, $element, $ctrls
+    const callback = bind void, onSubmitHandler, $element, $ctrls
     #
     # If $element.is 'a', it won't get the 'submit' event.
     # We can assume 'onSubmitHandler' will be triggered on 'form' $element.
@@ -153,7 +164,7 @@ angular.module 'angular.ujs' <[
     $ctrls.0 = $controller 'noopRailsConfirmCtrl' controllerArgs unless $ctrls.0
     $ctrls.1 = $controller 'noopRailsRemoteFormCtrl' controllerArgs unless $ctrls.1
     
-    const callback = angular.bind $ctrls, onClickHandler, $scope, $attrs, $ctrls
+    const callback = bind $ctrls, onClickHandler, $scope, $attrs, $ctrls
     
     $element.on 'click' callback
     $scope.$on '$destroy' !-> $element.off 'click' callback
