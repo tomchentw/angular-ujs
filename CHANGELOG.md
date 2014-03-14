@@ -1,3 +1,13 @@
+<a name="0.4.11"></a>
+### 0.4.11 (2014-03-14)
+
+
+#### Bug Fixes
+
+* **Makefile:** start test/scenario-rails ([3fe09534](https://github.com/tomchentw/angular-ujs/commit/3fe09534f4b68689ff8aece6ef7f21120f801ec4))
+* **README.md:** update coveralls link ([ae07b0a7](https://github.com/tomchentw/angular-ujs/commit/ae07b0a70737e5a955180f026a865bde58503637))
+
+
 <a name="0.4.10"></a>
 ### 0.4.10 (2014-03-09)
 

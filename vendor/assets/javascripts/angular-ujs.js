@@ -1,4 +1,4 @@
-/*! angular-ujs - v 0.4.10 - Sun Mar 09 2014 02:49:36 GMT+0800 (CST)
+/*! angular-ujs - v 0.4.11 - Fri Mar 14 2014 12:16:13 GMT+0800 (CST)
  * https://github.com/tomchentw/angular-ujs
  * Copyright (c) 2014 [tomchentw](https://github.com/tomchentw);
  * Licensed [MIT](http://tomchentw.mit-license.org)
