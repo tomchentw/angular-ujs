@@ -1,4 +1,4 @@
-/*! angular-ujs - v 0.4.11 - Fri Mar 14 2014 12:16:13 GMT+0800 (CST)
+/*! angular-ujs - v 0.4.12 - Fri Mar 14 2014 12:56:09 GMT+0800 (CST)
  * https://github.com/tomchentw/angular-ujs
  * Copyright (c) 2014 [tomchentw](https://github.com/tomchentw);
  * Licensed [MIT](http://tomchentw.mit-license.org)
@@ -6,6 +6,8 @@
 /*global angular:false*/
 (function(){
   'use strict';
+  var bind;
+  bind = angular.bind;
   function denyDefaultAction(event){
     event.preventDefault();
     event.stopPropagation();
@@ -21,40 +23,47 @@
       }
       return metas;
     };
-  })).controller('noopRailsConfirmCtrl', function(){
-    this.allowAction = function(){
+  })).controller('noopRailsConfirmCtrl', (function(){
+    var prototype = constructor.prototype;
+    prototype.allowAction = function(){
       return true;
     };
-    this.denyDefaultAction = denyDefaultAction;
-  }).controller('RailsConfirmCtrl', ['$window', '$attrs'].concat(function($window, $attrs){
-    this.allowAction = function(){
+    prototype.denyDefaultAction = denyDefaultAction;
+    function constructor(){}
+    return constructor;
+  }())).controller('RailsConfirmCtrl', (function(){
+    var prototype = constructor.prototype;
+    prototype.allowAction = function(){
       var message;
-      message = $attrs.confirm;
-      return angular.isDefined(message) && $window.confirm(message);
+      message = this.$attrs.confirm;
+      return angular.isDefined(message) && this.$window.confirm(message);
     };
-    this.denyDefaultAction = denyDefaultAction;
-  })).controller('noopRailsRemoteFormCtrl', function(){
-    this.submit = function($form){
+    prototype.denyDefaultAction = denyDefaultAction;
+    constructor.$inject = ['$window', '$attrs'];
+    function constructor($window, $attrs){
+      this.$window = $window;
+      this.$attrs = $attrs;
+    }
+    return constructor;
+  }())).controller('noopRailsRemoteFormCtrl', (function(){
+    var prototype = constructor.prototype;
+    prototype.submit = function($form){
       $form[0].submit();
       return {
         then: angular.noop
       };
     };
-  }).controller('RailsRemoteFormCtrl', ['$scope', '$attrs', '$parse', '$http'].concat(function($scope, $attrs, $parse, $http){
-    var successCallback, errorCallback;
-    successCallback = function(response){
-      $scope.$emit('rails:remote:success', response);
-    };
-    errorCallback = function(response){
-      $scope.$emit('rails:remote:error', response);
-    };
-    this.submit = function($form){
+    function constructor(){}
+    return constructor;
+  }())).controller('RailsRemoteFormCtrl', (function(){
+    var prototype = constructor.prototype;
+    prototype.submit = function($form){
       var targetScope, modelName, data, key, value, config, METHOD, own$ = {}.hasOwnProperty;
       targetScope = $form.scope();
-      modelName = $attrs.remote;
+      modelName = this.$attrs.remote;
       data = {};
       if (modelName + "" !== 'true') {
-        $parse(modelName).assign(data, targetScope.$eval(modelName));
+        this.$parse(modelName).assign(data, targetScope.$eval(modelName));
       } else {
         for (key in targetScope) if (own$.call(targetScope, key)) {
           value = targetScope[key];
@@ -75,9 +84,25 @@
           'X-Http-Method-Override': METHOD
         };
       }
-      return $http(config).then(successCallback, errorCallback);
+      return this.$http(config).then(this.successCallback, this.errorCallback);
     };
-  })).directive('confirm', function(){
+    prototype.successCallback = function(response){
+      this.$scope.$emit('rails:remote:success', response);
+    };
+    prototype.errorCallback = function(response){
+      this.$scope.$emit('rails:remote:error', response);
+    };
+    constructor.$inject = ['$scope', '$attrs', '$parse', '$http'];
+    function constructor($scope, $attrs, $parse, $http){
+      this.$scope = $scope;
+      this.$attrs = $attrs;
+      this.$parse = $parse;
+      this.$http = $http;
+      this.successCallback = bind(this, this.successCallback);
+      this.errorCallback = bind(this, this.errorCallback);
+    }
+    return constructor;
+  }())).directive('confirm', function(){
     function onClickHandler(confirmCtrl, event){
       if (!confirmCtrl.allowAction()) {
         confirmCtrl.denyDefaultAction(event);
@@ -85,7 +110,7 @@
     }
     function postLinkFn($scope, $element, $attrs, $ctrls){
       var callback;
-      callback = angular.bind(void 8, onClickHandler, $ctrls[0]);
+      callback = bind(void 8, onClickHandler, $ctrls[0]);
       $element.on('click', callback);
       $scope.$on('$destroy', function(){
         $element.off('click', callback);
@@ -118,7 +143,7 @@
           $scope: $scope
         });
       }
-      callback = angular.bind(void 8, onSubmitHandler, $element, $ctrls);
+      callback = bind(void 8, onSubmitHandler, $element, $ctrls);
       $element.on('submit', callback);
       $scope.$on('$destroy', function(){
         $element.off('submit', callback);
@@ -165,7 +190,7 @@
       if (!$ctrls[1]) {
         $ctrls[1] = $controller('noopRailsRemoteFormCtrl', controllerArgs);
       }
-      callback = angular.bind($ctrls, onClickHandler, $scope, $attrs, $ctrls);
+      callback = bind($ctrls, onClickHandler, $scope, $attrs, $ctrls);
       $element.on('click', callback);
       $scope.$on('$destroy', function(){
         $element.off('click', callback);
