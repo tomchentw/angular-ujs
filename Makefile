@@ -29,7 +29,8 @@ server: install
 test.karma: install
 	$(bin)/karma start test/karma.js
 ifdef TRAVIS
-	find tmp/coverage -name lcov.info -follow -type f -print0 | xargs -0 cat | $(bin)/coveralls
+	find tmp/coverage -name lcov.info -follow -type f -print0 \
+		| xargs -0 cat | $(bin)/coveralls
 endif
 
 test.protractor: install
