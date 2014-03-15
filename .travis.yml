@@ -4,11 +4,11 @@ node_js:
 before_install:
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
-- cd misc/test-scenario
+- cd test/scenario-rails
 - export BUNDLE_GEMFILE=$PWD/Gemfile
 - bundle install
 - RAILS_ENV=test bundle exec rake db:migrate
-- rvmsudo rails s -d -e test -p 80
+- rails s -d -e test -p 2999
 - sleep 3
 - cd ../..
 - export BUNDLE_GEMFILE=$PWD/Gemfile
