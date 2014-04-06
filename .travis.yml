@@ -8,10 +8,11 @@ before_install:
 - export BUNDLE_GEMFILE=$PWD/Gemfile
 - bundle install
 - RAILS_ENV=test bundle exec rake db:migrate
-- rails s -d -e test -p 2999
+- rails s -d -e test -p 5000
 - sleep 3
 - cd ../..
 - export BUNDLE_GEMFILE=$PWD/Gemfile
+install: make install
 script: make test
 after_script:
 - sudo kill `cat misc/test-scenario/tmp/pids/server.pid`
