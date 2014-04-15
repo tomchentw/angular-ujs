@@ -1,14 +1,14 @@
 # angular-ujs
 > Distributed via
 
-[![Version     ](https://img.shields.io/gem/v/angular-ujs.svg)                                     ](https://rubygems.org/gems/angular-ujs)
+[![Version     ](https://img.shields.io/gem/v/angular-ujs.svg)                                      ](https://rubygems.org/gems/angular-ujs)
 
 > Unobtrusive scripting for AngularJS ( without jQuery dependency )
 
-[![Travis CI   ](https://img.shields.io/travis/tomchentw/angular-ujs/master.svg)                   ](https://travis-ci.org/tomchentw/angular-ujs)
-[![Quality     ](https://img.shields.io/codeclimate/github/tomchentw/angular-ujs.svg)              ](https://codeclimate.com/github/tomchentw/angular-ujs)
-[![Coverage    ](https://img.shields.io/coveralls/tomchentw/angular-ujs.svg)                       ](https://coveralls.io/r/tomchentw/angular-ujs)
-[![Dependencies](https://img.shields.io/gemnasium/tomchentw/angular-ujs.svg)                       ](https://gemnasium.com/tomchentw/angular-ujs)
+[![Travis CI   ](https://travis-ci.org/tomchentw/angular-ujs.svg?branch=master)                     ](https://travis-ci.org/tomchentw/angular-ujs)
+[![Quality     ](https://img.shields.io/codeclimate/github/tomchentw/angular-ujs.svg)               ](https://codeclimate.com/github/tomchentw/angular-ujs)
+[![Coverage    ](https://img.shields.io/coveralls/tomchentw/angular-ujs.svg)                        ](https://coveralls.io/r/tomchentw/angular-ujs)
+[![Dependencies](https://gemnasium.com/tomchentw/angular-ujs.svg)                                   ](https://gemnasium.com/tomchentw/angular-ujs)
 
 
 ## Project philosophy
@@ -39,6 +39,7 @@ Then include them through script tag in your HTML.
 
 ### **Rails** projects (Only support 3.1+)
 Add this line to your application's Gemfile:
+
 ```ruby
 gem 'ng-rails-csrf' # Optional
 gem 'angular-ujs'
@@ -57,12 +58,13 @@ Then add these lines to the top of your `app/assets/javascripts/application.js` 
 ```
 
 And include in your `angular` module definition:
-    
-    /* 'angular.ujs' DO NOT depend on 'ng-rails-csrf' module.
-     * You need to include it yourself.
-     */    
-    var module = angular.module('my-awesome-project', ['angular.ujs']).
 
+```javascript
+/* 'angular.ujs' DO NOT depend on 'ng-rails-csrf' module.
+* You need to include it yourself.
+*/  
+var module = angular.module('my-awesome-project', ['angular.ujs']).
+```
 
 
 ## Usage

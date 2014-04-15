@@ -1,4 +1,4 @@
-(...) <-! describe 'angular.ujs'
+(...) <-! describe 'angular.ujs module'
 const ptor      = protractor.getInstance!
 const EMAIL     = 'developer@tomchentw.com'
 const PASSWORD  = 'angular.ujs'

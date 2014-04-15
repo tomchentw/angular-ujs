@@ -19,7 +19,6 @@
   "private": false,
   "ignore": [
     "**/.*",
-    "app",
     "bower_components",
     "client",
     "config",
@@ -43,10 +42,11 @@
     "angular": "~1.2.13"
   },
   "devDependencies": {
-    "jquery": "~2.1.0",
-    "angular-sanitize": "~1.2.13",
     "angular-mocks": "~1.2.13",
+    "angular-sanitize": "~1.2.13",
     "angular-bootstrap": "~0.10.0",
+    "angular-ga": "~0.1.0",
+    "jquery": "~2.1.0",
     "twbs-bootstrap-sass": "~3.1.1"
   }
 }

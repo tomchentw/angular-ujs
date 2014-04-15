@@ -1,5 +1,6 @@
-angular.module 'demo' <[
-  ngSanitize
+angular.module 'application' <[
   ui.bootstrap
-  angular.ujs
+  ga
+  ngSanitize
+  angular.ujs  
 ]>

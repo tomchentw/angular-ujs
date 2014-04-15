@@ -1,4 +1,4 @@
-(...) <-! describe 'module angular.ujs'
+(...) <-! describe 'angular.ujs module'
 $compile = $rootScope = $document = $controller = $httpBackend = $sniffer = void
 
 beforeEach module 'angular.ujs'

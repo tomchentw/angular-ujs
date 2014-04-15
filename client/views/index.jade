@@ -1,12 +1,22 @@
 doctype html
-html(ng-app="demo")
+html(ng-app="application")
   head
     meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible" content="IE=edge")
     base(href="/")
     title angular-ujs
+    meta(name="description" content="Ruby on Rails replacement for unobtrusive scripting library `jquery_ujs` implemented in AngularJS without jQuery dependency")
     meta(name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0")
+    meta(property="og:type" content="website")
+    meta(property="og:url" content="http://angular-ujs.tomchentw.com")
+    meta(property="og:title" content="angular-ujs")
+    meta(property="og:description" content="Ruby on Rails replacement for unobtrusive scripting library `jquery_ujs` implemented in AngularJS without jQuery dependency")
+
+    <!-- Place favicon.ico and apple-touch-icon(s) in the root directory -->
+
     link(rel="stylesheet" href=stylesheetLinkTag("application.css"))
-    script(type="text/javascript" defer src=javascriptIncludeTag("application.js"))
+    script(type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.7.1/modernizr.min.js")
+    script(type="text/javascript" src=javascriptIncludeTag("application.js"))
   body
     include partials/header
     h1 angular-ujs

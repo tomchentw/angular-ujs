@@ -13,7 +13,9 @@ module.exports = function(config) {
       'bower_components/jquery/dist/jquery.min.js',
       'bower_components/angular/angular.min.js',
       'bower_components/angular-mocks/angular-mocks.js',
+      'client/javascripts/application.ls',
       'lib/javascripts/angular-ujs.ls',
+      'test/javascripts/application.spec.ls',
       'test/javascripts/angular-ujs.spec.ls'
     ],
 
@@ -27,6 +29,7 @@ module.exports = function(config) {
       // source files, that you wanna generate coverage for
       // do not include tests or libraries
       // (these files will be instrumented by Istanbul)
+      'client/javascripts/application.ls': ['coverage'],
       'lib/javascripts/angular-ujs.ls': ['coverage']
     },
 
