@@ -69,7 +69,7 @@ gulp.task 'client:js:partials' ->
   .pipe gulp.dest 'tmp/.js-cache/partials'
 
 gulp.task 'client:html' <[ client:html:partials client:js:partials ]> ->
- stream = gulp.src 'client/views/*.jade'
+  stream = gulp.src 'client/views/*.jade'
   .pipe gulp-jade do
     pretty: !config.env.is 'production'
     doctype: 'html'
@@ -98,6 +98,7 @@ gulp.task 'client:css:scss' ->
 gulp.task 'client:css:bower_components' ->
   stream = gulp.src <[
     bower_components/angular/angular-csp.css
+    bower_components/angular-loading-bar/build/loading-bar.min.css
   ]>
   stream.=pipe gulp-minify-css! if config.env.is 'production'
   return stream.pipe gulp.dest 'tmp/.css-cache'
@@ -149,7 +150,7 @@ gulp.task 'client:js' <[ lib:js client:templates client:js:ls client:js:bower_co
   stream = gulp.src [
     'bower_components/angular/angular.min.js'
     'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js'
-    'bower_components/angular-sanitize/angular-sanitize.min.js'
+    'bower_components/angular-loading-bar/build/loading-bar.min.js'
     'tmp/.js-cache/*.js'
   ]
   .pipe gulp-concat 'application.js'
