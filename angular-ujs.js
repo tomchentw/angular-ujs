@@ -1,13 +1,11 @@
-/*! angular-ujs - v 0.4.12 - Fri Mar 14 2014 12:56:09 GMT+0800 (CST)
+/*! angular-ujs - v 0.4.13 - Wed Apr 23 2014 21:24:18 GMT+0800 (CST)
  * https://github.com/tomchentw/angular-ujs
  * Copyright (c) 2014 [tomchentw](https://github.com/tomchentw);
  * Licensed [MIT](http://tomchentw.mit-license.org)
  */
 /*global angular:false*/
-(function(){
+(function(angular, bind){
   'use strict';
-  var bind;
-  bind = angular.bind;
   function denyDefaultAction(event){
     event.preventDefault();
     event.stopPropagation();
@@ -207,4 +205,4 @@
       }
     };
   }));
-}).call(this);
+}.call(this, angular, angular.bind));

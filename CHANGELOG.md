@@ -1,3 +1,12 @@
+<a name="0.4.13"></a>
+### 0.4.13  (2014-04-23)
+
+
+#### Bug Fixes
+
+* **Makefile:** check TRAVIS defined ([3659f970](https://github.com/tomchentw/angular-ujs/commit/3659f970571635a16541763eab16699edda1a338))
+
+
 <a name="0.4.12"></a>
 ### 0.4.12 (2014-03-14)
 
