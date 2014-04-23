@@ -6,9 +6,10 @@ require! {
 }
 require! {
   gulp
+  'gulp-livescript'
+  'gulp-jshint'
   'gulp-uglify'
   'gulp-header'
-  'gulp-livescript'
 }
 require! {
   '../config'
@@ -30,5 +31,7 @@ gulp.task 'lib:js' module.exports = ->
   stream = gulp.src 'lib/javascripts/*.ls'
   .pipe gulp-livescript bare: true
   stream.=pipe gulp-uglify! if config.env.is 'production'
-  stream.pipe getHeaderStream!
+  stream.pipe gulp-jshint!
+  .pipe gulp-jshint.reporter 'jshint-stylish'
+  .pipe getHeaderStream!
   .pipe gulp.dest 'tmp/.js-cache'
