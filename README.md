@@ -66,6 +66,13 @@ And include in your `angular` module definition:
 var module = angular.module('my-awesome-project', ['angular.ujs']).
 ```
 
+Note: Ensure that the ng-app is specified in your application layout (app/views/layouts/application.html.erb):
+
+```
+<!DOCTYPE html>
+<html ng-app="my-awesome-project">
+<head>
+```
 
 ## Usage
 
